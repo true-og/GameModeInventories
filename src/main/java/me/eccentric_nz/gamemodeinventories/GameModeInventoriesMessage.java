@@ -3,13 +3,12 @@
  */
 package me.eccentric_nz.gamemodeinventories;
 
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * @author eccentric_nz
@@ -27,7 +26,8 @@ public class GameModeInventoriesMessage {
         messagesFile = getMessagesFile();
         messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
         messageOptions.put("CONFIG_SET", "%s was set to: %s");
-        messageOptions.put("HELP", "There is no help! Just switch game modes, and your inventory/armor/xp will change.");
+        messageOptions.put(
+                "HELP", "There is no help! Just switch game modes, and your inventory/armor/xp will change.");
         messageOptions.put("INVALID_MATERIAL", "Invalid material in blacklist");
         messageOptions.put("INVALID_MATERIAL_TRACK", "Invalid material in dont_track list");
         messageOptions.put("NO_CREATIVE_BREAK", "You cannot break blocks that were placed in CREATIVE gamemode!");
@@ -68,7 +68,10 @@ public class GameModeInventoriesMessage {
                         out.write(buf, 0, len);
                     }
                 } catch (IOException io) {
-                    plugin.getLogger().log(Level.WARNING, "[GameModeInventories] Could not save the file (" + file.toString() + ").");
+                    plugin.getLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "[GameModeInventories] Could not save the file (" + file.toString() + ").");
                 } finally {
                     try {
                         out.close();

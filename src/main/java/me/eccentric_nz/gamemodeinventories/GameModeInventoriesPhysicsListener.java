@@ -3,15 +3,14 @@
  */
 package me.eccentric_nz.gamemodeinventories;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPhysicsEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author eccentric_nz
@@ -185,22 +184,28 @@ public class GameModeInventoriesPhysicsListener implements Listener {
         if (!willDrop.contains(block.getType())) {
             return;
         }
-        if (!plugin.getConfig().getBoolean("track_creative_place.enabled") || !plugin.getConfig().getBoolean("track_creative_place.attached_block")) {
+        if (!plugin.getConfig().getBoolean("track_creative_place.enabled")
+                || !plugin.getConfig().getBoolean("track_creative_place.attached_block")) {
             return;
         }
-        if (!plugin.getConfig().getStringList("track_creative_place.worlds").contains(block.getWorld().getName())) {
+        if (!plugin.getConfig()
+                .getStringList("track_creative_place.worlds")
+                .contains(block.getWorld().getName())) {
             return;
         }
         if (doors.contains(block.getType()) && plates.contains(event.getChangedType())) {
             return;
         }
         if (willDrop.contains(block.getType())) {
-            String gmiwc = block.getWorld().getName() + "," + block.getChunk().getX() + "," + block.getChunk().getZ();
+            String gmiwc = block.getWorld().getName() + "," + block.getChunk().getX() + ","
+                    + block.getChunk().getZ();
             if (!plugin.getCreativeBlocks().containsKey(gmiwc)) {
                 return;
             }
             // check if the block was placed in creative
-            if (plugin.getCreativeBlocks().get(gmiwc).contains(event.getBlock().getLocation().toString())) {
+            if (plugin.getCreativeBlocks()
+                    .get(gmiwc)
+                    .contains(event.getBlock().getLocation().toString())) {
                 event.setCancelled(true);
             }
         }

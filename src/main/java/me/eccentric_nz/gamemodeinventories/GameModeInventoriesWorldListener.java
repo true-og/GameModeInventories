@@ -3,6 +3,10 @@
  */
 package me.eccentric_nz.gamemodeinventories;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -11,11 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * @author eccentric_nz
@@ -30,35 +29,36 @@ public class GameModeInventoriesWorldListener implements Listener {
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event) {
-//        if (plugin.getConfig().getBoolean("creative_world.switch_to")) {
-//            Player p = event.getPlayer();
-//            String uuid = p.getUniqueId().toString();
-//            // player changed worlds, record last location
-//            // check if the player has a record for this world
-//            try (
-//                    Connection connection = GameModeInventoriesConnectionPool.dbc();
-//                    PreparedStatement statement = connection.prepareStatement("SELECT * FROM worlds WHERE uuid = ? AND world = ?");
-//            ) {
-//                statement.setString(1, uuid);
-//                statement.setString(2, p.getWorld().getName());
-//                try (ResultSet rs = statement.executeQuery();) {
-//                    if (rs.next()) {
-//                        World w = plugin.getServer().getWorld(rs.getString("world"));
-//                        if (w != null) {
-//                            double x = rs.getDouble("x");
-//                            double y = rs.getDouble("y");
-//                            double z = rs.getDouble("z");
-//                            float yaw = rs.getFloat("yaw");
-//                            float pitch = rs.getFloat("pitch");
-//                            Location loc = new Location(w, x, y, z, yaw, pitch);
-//                            p.teleport(loc);
-//                        }
-//                    }
-//                }
-//            } catch (SQLException e) {
-//                plugin.debug("Could not get creative world location, " + e);
-//            }
-//        }
+        //        if (plugin.getConfig().getBoolean("creative_world.switch_to")) {
+        //            Player p = event.getPlayer();
+        //            String uuid = p.getUniqueId().toString();
+        //            // player changed worlds, record last location
+        //            // check if the player has a record for this world
+        //            try (
+        //                    Connection connection = GameModeInventoriesConnectionPool.dbc();
+        //                    PreparedStatement statement = connection.prepareStatement("SELECT * FROM worlds WHERE uuid
+        // = ? AND world = ?");
+        //            ) {
+        //                statement.setString(1, uuid);
+        //                statement.setString(2, p.getWorld().getName());
+        //                try (ResultSet rs = statement.executeQuery();) {
+        //                    if (rs.next()) {
+        //                        World w = plugin.getServer().getWorld(rs.getString("world"));
+        //                        if (w != null) {
+        //                            double x = rs.getDouble("x");
+        //                            double y = rs.getDouble("y");
+        //                            double z = rs.getDouble("z");
+        //                            float yaw = rs.getFloat("yaw");
+        //                            float pitch = rs.getFloat("pitch");
+        //                            Location loc = new Location(w, x, y, z, yaw, pitch);
+        //                            p.teleport(loc);
+        //                        }
+        //                    }
+        //                }
+        //            } catch (SQLException e) {
+        //                plugin.debug("Could not get creative world location, " + e);
+        //            }
+        //        }
         if (!plugin.getConfig().getBoolean("survival_on_world_change")) {
             return;
         }
@@ -83,15 +83,18 @@ public class GameModeInventoriesWorldListener implements Listener {
                 String uuid = event.getPlayer().getUniqueId().toString();
                 // player changed worlds, record last location
                 try (Connection connection = plugin.getDatabaseConnection();
-                     // check if the player has a record for this world
-                     PreparedStatement statement = connection.prepareStatement("SELECT world FROM " + plugin.getPrefix() + "worlds WHERE uuid = ? AND world = ?");) {
+                        // check if the player has a record for this world
+                        PreparedStatement statement = connection.prepareStatement(
+                                "SELECT world FROM " + plugin.getPrefix() + "worlds WHERE uuid = ? AND world = ?"); ) {
                     statement.setString(1, uuid);
                     statement.setString(2, from.getWorld().getName());
-                    try (ResultSet rs = statement.executeQuery();) {
+                    try (ResultSet rs = statement.executeQuery(); ) {
                         if (rs.isBeforeFirst()) {
                             rs.next();
                             // update the record
-                            try (PreparedStatement update = connection.prepareStatement("UPDATE " + plugin.getPrefix() + "worlds set x = ?, y = ?, z = ?, pitch = ?, yaw = ? WHERE uuid = ? AND world = ?");) {
+                            try (PreparedStatement update = connection.prepareStatement(
+                                    "UPDATE " + plugin.getPrefix()
+                                            + "worlds set x = ?, y = ?, z = ?, pitch = ?, yaw = ? WHERE uuid = ? AND world = ?"); ) {
                                 update.setDouble(1, from.getX());
                                 update.setDouble(2, from.getY());
                                 update.setDouble(3, from.getZ());
@@ -103,7 +106,9 @@ public class GameModeInventoriesWorldListener implements Listener {
                             }
                         } else {
                             // add a new record
-                            try (PreparedStatement insert = connection.prepareStatement("INSERT INTO " + plugin.getPrefix() + "worlds (uuid, world, x, y, z, pitch, yaw) VALUES (?, ?, ?, ?, ?, ?, ?)");) {
+                            try (PreparedStatement insert = connection.prepareStatement(
+                                    "INSERT INTO " + plugin.getPrefix()
+                                            + "worlds (uuid, world, x, y, z, pitch, yaw) VALUES (?, ?, ?, ?, ?, ?, ?)"); ) {
                                 insert.setString(1, uuid);
                                 insert.setString(2, from.getWorld().getName());
                                 insert.setDouble(3, from.getX());

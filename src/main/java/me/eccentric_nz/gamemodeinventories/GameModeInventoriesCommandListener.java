@@ -3,13 +3,12 @@
  */
 package me.eccentric_nz.gamemodeinventories;
 
+import java.util.List;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-
-import java.util.List;
 
 /**
  * @author eccentric_nz
@@ -29,7 +28,9 @@ public class GameModeInventoriesCommandListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onCommandUse(PlayerCommandPreprocessEvent event) {
-        if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE) || !plugin.getConfig().getBoolean("command_blacklist") || GameModeInventoriesBypass.canBypass(event.getPlayer(), "commands", plugin)) {
+        if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)
+                || !plugin.getConfig().getBoolean("command_blacklist")
+                || GameModeInventoriesBypass.canBypass(event.getPlayer(), "commands", plugin)) {
             return;
         }
         String message = event.getMessage();
@@ -40,7 +41,11 @@ public class GameModeInventoriesCommandListener implements Listener {
             if (blacklist.contains(command)) {
                 event.setCancelled(true);
                 if (!plugin.getConfig().getBoolean("dont_spam_chat")) {
-                    event.getPlayer().sendMessage(plugin.MY_PLUGIN_NAME + String.format(plugin.getM().getMessage().get("NO_CREATIVE_COMMAND"), ChatColor.GREEN + "/" + command + ChatColor.RESET));
+                    event.getPlayer()
+                            .sendMessage(plugin.MY_PLUGIN_NAME
+                                    + String.format(
+                                            plugin.getM().getMessage().get("NO_CREATIVE_COMMAND"),
+                                            ChatColor.GREEN + "/" + command + ChatColor.RESET));
                 }
             }
         }

@@ -1,10 +1,9 @@
 package me.eccentric_nz.gamemodeinventories;
 
 import com.google.common.base.Preconditions;
-import org.bukkit.entity.Player;
-
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import org.bukkit.entity.Player;
 
 /**
  * @author desht
@@ -72,10 +71,9 @@ public class GameModeInventoriesXPCalculator {
         xpTotalToReachLevel = new int[maxLevel];
 
         for (int i = 0; i < xpTotalToReachLevel.length; i++) {
-            xpTotalToReachLevel[i]
-                    = i >= 30 ? (int) (3.5 * i * i - 151.5 * i + 2220)
-                    : i >= 16 ? (int) (1.5 * i * i - 29.5 * i + 360)
-                    : 17 * i;
+            xpTotalToReachLevel[i] = i >= 30
+                    ? (int) (3.5 * i * i - 151.5 * i + 2220)
+                    : i >= 16 ? (int) (1.5 * i * i - 29.5 * i + 360) : 17 * i;
         }
     }
 
@@ -231,7 +229,8 @@ public class GameModeInventoriesXPCalculator {
         if (exp > xpTotalToReachLevel[xpTotalToReachLevel.length - 1]) {
             // need to extend the lookup tables
             int newMax = calculateLevelForExp(exp) * 2;
-            Preconditions.checkArgument(newMax <= hardMaxLevel, "Level for exp " + exp + " > hard max level " + hardMaxLevel);
+            Preconditions.checkArgument(
+                    newMax <= hardMaxLevel, "Level for exp " + exp + " > hard max level " + hardMaxLevel);
             initLookupTables(newMax);
         }
         int pos = Arrays.binarySearch(xpTotalToReachLevel, exp);
@@ -258,7 +257,9 @@ public class GameModeInventoriesXPCalculator {
      * @throws IllegalArgumentException if the level is less than 0 or greater than the current hard maximum
      */
     private int getXpForLevel(int level) {
-        Preconditions.checkArgument(level >= 0 && level <= hardMaxLevel, "Invalid level " + level + "(must be in range 0.." + hardMaxLevel + ")");
+        Preconditions.checkArgument(
+                level >= 0 && level <= hardMaxLevel,
+                "Invalid level " + level + "(must be in range 0.." + hardMaxLevel + ")");
         if (level >= xpTotalToReachLevel.length) {
             initLookupTables(level * 2);
         }

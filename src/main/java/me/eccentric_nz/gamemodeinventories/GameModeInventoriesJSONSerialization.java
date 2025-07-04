@@ -16,6 +16,8 @@
  */
 package me.eccentric_nz.gamemodeinventories;
 
+import java.util.*;
+import java.util.logging.Level;
 import me.eccentric_nz.gamemodeinventories.JSON.JSONArray;
 import me.eccentric_nz.gamemodeinventories.JSON.JSONException;
 import me.eccentric_nz.gamemodeinventories.JSON.JSONObject;
@@ -23,9 +25,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.*;
-import java.util.logging.Level;
 
 /**
  * Fancy JSON serialization mostly by evilmidget38.
@@ -109,7 +108,8 @@ public class GameModeInventoriesJSONSerialization {
                 entry.setValue(serialize(configurationSerializable));
             }
         });
-        serialized.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY, ConfigurationSerialization.getAlias(cs.getClass()));
+        serialized.put(
+                ConfigurationSerialization.SERIALIZED_TYPE_KEY, ConfigurationSerialization.getAlias(cs.getClass()));
         return serialized;
     }
 
@@ -123,7 +123,8 @@ public class GameModeInventoriesJSONSerialization {
 
     public static ConfigurationSerializable deserialize(Map<String, Object> map) {
         map.entrySet().forEach((entry) -> {
-            if (entry.getValue() instanceof Map map1 && map1.containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
+            if (entry.getValue() instanceof Map map1
+                    && map1.containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
                 entry.setValue(deserialize((Map) entry.getValue()));
             }
         });

@@ -2,9 +2,8 @@ package me.eccentric_nz.gamemodeinventories.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import me.eccentric_nz.gamemodeinventories.GameModeInventories;
-
 import java.io.File;
+import me.eccentric_nz.gamemodeinventories.GameModeInventories;
 
 public class GameModeInventoriesSQLiteConnectionPool {
 

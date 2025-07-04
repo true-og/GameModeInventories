@@ -49,7 +49,8 @@ public class GameModeInventoriesBlockListener implements Listener {
             Material mat = event.getItem().getType();
             Player p = event.getPlayer();
             if (p.getGameMode().equals(GameMode.SURVIVAL)) {
-                if (!plugin.getConfig().getBoolean("track_creative_place.enabled") || !plugin.getConfig().getBoolean("track_creative_place.no_seeds_from_pumpkin")) {
+                if (!plugin.getConfig().getBoolean("track_creative_place.enabled")
+                        || !plugin.getConfig().getBoolean("track_creative_place.no_seeds_from_pumpkin")) {
                     return;
                 }
                 if (mat.equals(Material.SHEARS)) {
@@ -60,14 +61,20 @@ public class GameModeInventoriesBlockListener implements Listener {
                     if (!pumpkin.getType().equals(Material.PUMPKIN)) {
                         return;
                     }
-                    if (!plugin.getConfig().getStringList("track_creative_place.worlds").contains(pumpkin.getWorld().getName())) {
+                    if (!plugin.getConfig()
+                            .getStringList("track_creative_place.worlds")
+                            .contains(pumpkin.getWorld().getName())) {
                         return;
                     }
-                    String gmiwc = pumpkin.getWorld().getName() + "," + pumpkin.getChunk().getX() + "," + pumpkin.getChunk().getZ();
+                    String gmiwc = pumpkin.getWorld().getName() + ","
+                            + pumpkin.getChunk().getX() + ","
+                            + pumpkin.getChunk().getZ();
                     if (!plugin.getCreativeBlocks().containsKey(gmiwc)) {
                         return;
                     }
-                    if (plugin.getCreativeBlocks().get(gmiwc).contains(pumpkin.getLocation().toString())) {
+                    if (plugin.getCreativeBlocks()
+                            .get(gmiwc)
+                            .contains(pumpkin.getLocation().toString())) {
                         event.setCancelled(true);
                     }
                 }
@@ -79,7 +86,8 @@ public class GameModeInventoriesBlockListener implements Listener {
                 Block pumpkin = event.getClickedBlock();
                 if (pumpkin != null && pumpkin.getType().equals(Material.PUMPKIN)) {
                     // check blocks around pumpkin
-                    if (mat.equals(Material.SHEARS) && GameModeInventoriesConstructedMob.checkBlocks(Material.PUMPKIN, pumpkin)) {
+                    if (mat.equals(Material.SHEARS)
+                            && GameModeInventoriesConstructedMob.checkBlocks(Material.PUMPKIN, pumpkin)) {
                         event.setCancelled(true);
                     }
                 }
@@ -88,16 +96,23 @@ public class GameModeInventoriesBlockListener implements Listener {
                 if (mat.equals(Material.ARMOR_STAND)) {
                     Block b = event.getClickedBlock();
                     if (b != null) {
-                        if (plugin.getConfig().getStringList("track_creative_place.worlds").contains(b.getWorld().getName())) {
+                        if (plugin.getConfig()
+                                .getStringList("track_creative_place.worlds")
+                                .contains(b.getWorld().getName())) {
                             Location l = b.getLocation();
                             if (l != null) {
                                 String gmip = l.getBlockX() + "," + l.getBlockZ();
                                 plugin.getPoints().add(gmip);
-                                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                                    if (plugin.getPoints().contains(gmip)) {
-                                        plugin.getPoints().remove(gmip);
-                                    }
-                                }, 600L);
+                                plugin.getServer()
+                                        .getScheduler()
+                                        .scheduleSyncDelayedTask(
+                                                plugin,
+                                                () -> {
+                                                    if (plugin.getPoints().contains(gmip)) {
+                                                        plugin.getPoints().remove(gmip);
+                                                    }
+                                                },
+                                                600L);
                             }
                         }
                     }
@@ -106,12 +121,15 @@ public class GameModeInventoriesBlockListener implements Listener {
             if (!plugin.getConfig().getBoolean("creative_blacklist")) {
                 return;
             }
-            if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
-                if (plugin.getBlackList().contains(mat) && !GameModeInventoriesBypass.canBypass(p, "blacklist", plugin)) {
+            if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
+                    || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
+                if (plugin.getBlackList().contains(mat)
+                        && !GameModeInventoriesBypass.canBypass(p, "blacklist", plugin)) {
                     event.setCancelled(true);
                     event.setUseItemInHand(Result.DENY);
                     if (!plugin.getConfig().getBoolean("dont_spam_chat")) {
-                        p.sendMessage(plugin.MY_PLUGIN_NAME + String.format(plugin.getM().getMessage().get("NO_CREATIVE_PLACE"), mat.toString()));
+                        p.sendMessage(plugin.MY_PLUGIN_NAME
+                                + String.format(plugin.getM().getMessage().get("NO_CREATIVE_PLACE"), mat.toString()));
                     }
                 }
             }
@@ -132,7 +150,8 @@ public class GameModeInventoriesBlockListener implements Listener {
         }
         if (br.getLocation().getY() < 5) {
             event.setCancelled(true);
-        } else if (br.getWorld().getEnvironment().equals(Environment.NETHER) && br.getLocation().getY() > 122) {
+        } else if (br.getWorld().getEnvironment().equals(Environment.NETHER)
+                && br.getLocation().getY() > 122) {
             event.setCancelled(true);
         }
     }
@@ -140,18 +159,23 @@ public class GameModeInventoriesBlockListener implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
         if (plugin.getConfig().getBoolean("track_creative_place.enabled")) {
-            if (!plugin.getConfig().getStringList("track_creative_place.worlds").contains(event.getLocation().getWorld().getName())) {
+            if (!plugin.getConfig()
+                    .getStringList("track_creative_place.worlds")
+                    .contains(event.getLocation().getWorld().getName())) {
                 return;
             }
             for (Block b : event.blockList()) {
                 if (plugin.getNoTrackList().contains(b.getType())) {
                     continue;
                 }
-                String gmiwc = b.getWorld().getName() + "," + b.getChunk().getX() + "," + b.getChunk().getZ();
+                String gmiwc = b.getWorld().getName() + "," + b.getChunk().getX() + ","
+                        + b.getChunk().getZ();
                 if (!plugin.getCreativeBlocks().containsKey(gmiwc)) {
                     continue;
                 }
-                if (plugin.getCreativeBlocks().get(gmiwc).contains(b.getLocation().toString())) {
+                if (plugin.getCreativeBlocks()
+                        .get(gmiwc)
+                        .contains(b.getLocation().toString())) {
                     event.setYield(0);
                     event.setCancelled(true);
                     return;

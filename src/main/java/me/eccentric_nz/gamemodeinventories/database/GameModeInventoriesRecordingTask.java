@@ -1,11 +1,10 @@
 package me.eccentric_nz.gamemodeinventories.database;
 
-import me.eccentric_nz.gamemodeinventories.GMIDebug;
-import me.eccentric_nz.gamemodeinventories.GameModeInventories;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import me.eccentric_nz.gamemodeinventories.GMIDebug;
+import me.eccentric_nz.gamemodeinventories.GameModeInventories;
 
 public class GameModeInventoriesRecordingTask implements Runnable {
 
@@ -32,7 +31,9 @@ public class GameModeInventoriesRecordingTask implements Runnable {
                 // Handle dead connections
                 if (conn == null || conn.isClosed()) {
                     if (GameModeInventoriesRecordingManager.failedDbConnectionCount == 0) {
-                        plugin.debug("GMI database error. Connection should be there but it's not. Leaving actions to log in queue.", GMIDebug.INFO);
+                        plugin.debug(
+                                "GMI database error. Connection should be there but it's not. Leaving actions to log in queue.",
+                                GMIDebug.INFO);
                     }
                     GameModeInventoriesRecordingManager.failedDbConnectionCount++;
                     if (GameModeInventoriesRecordingManager.failedDbConnectionCount > 5) {
@@ -46,14 +47,18 @@ public class GameModeInventoriesRecordingTask implements Runnable {
                 }
                 // Connection valid, proceed
                 conn.setAutoCommit(false);
-                s = conn.prepareStatement("INSERT INTO " + plugin.getPrefix() + "blocks (worldchunk,location) VALUES (?,?)");
+                s = conn.prepareStatement(
+                        "INSERT INTO " + plugin.getPrefix() + "blocks (worldchunk,location) VALUES (?,?)");
                 int i = 0;
                 while (!GameModeInventoriesRecordingQueue.getQUEUE().isEmpty()) {
                     if (conn.isClosed()) {
-                        plugin.debug("GMI database error. We have to bail in the middle of building primary bulk insert query.", GMIDebug.ERROR);
+                        plugin.debug(
+                                "GMI database error. We have to bail in the middle of building primary bulk insert query.",
+                                GMIDebug.ERROR);
                         break;
                     }
-                    GameModeInventoriesQueueData a = GameModeInventoriesRecordingQueue.getQUEUE().poll();
+                    GameModeInventoriesQueueData a =
+                            GameModeInventoriesRecordingQueue.getQUEUE().poll();
                     // poll() returns null if queue is empty
                     if (a == null) {
                         break;
@@ -63,14 +68,20 @@ public class GameModeInventoriesRecordingTask implements Runnable {
                     s.addBatch();
                     // Break out of the loop and just commit what we have
                     if (i >= perBatch) {
-                        plugin.debug("Recorder: Batch max exceeded, running insert. Queue remaining: " + GameModeInventoriesRecordingQueue.getQUEUE().size(), GMIDebug.INFO);
+                        plugin.debug(
+                                "Recorder: Batch max exceeded, running insert. Queue remaining: "
+                                        + GameModeInventoriesRecordingQueue.getQUEUE()
+                                                .size(),
+                                GMIDebug.INFO);
                         break;
                     }
                     i++;
                 }
                 s.executeBatch();
                 if (conn.isClosed()) {
-                    plugin.debug("GMI database error. We have to bail in the middle of building primary bulk insert query.", GMIDebug.ERROR);
+                    plugin.debug(
+                            "GMI database error. We have to bail in the middle of building primary bulk insert query.",
+                            GMIDebug.ERROR);
                 } else {
                     conn.commit();
                     conn.setAutoCommit(true);
@@ -109,9 +120,14 @@ public class GameModeInventoriesRecordingTask implements Runnable {
 
     protected void scheduleNextRecording() {
         if (!plugin.isEnabled()) {
-            plugin.debug("Can't schedule new recording tasks as plugin is now disabled. If you're shutting down the server, ignore me.", GMIDebug.INFO);
+            plugin.debug(
+                    "Can't schedule new recording tasks as plugin is now disabled. If you're shutting down the server, ignore me.",
+                    GMIDebug.INFO);
             return;
         }
-        plugin.recordingTask = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new GameModeInventoriesRecordingTask(plugin), getTickDelayForNextBatch());
+        plugin.recordingTask = plugin.getServer()
+                .getScheduler()
+                .runTaskLaterAsynchronously(
+                        plugin, new GameModeInventoriesRecordingTask(plugin), getTickDelayForNextBatch());
     }
 }

@@ -3,10 +3,9 @@
  */
 package me.eccentric_nz.gamemodeinventories.database;
 
+import java.sql.*;
 import me.eccentric_nz.gamemodeinventories.GMIDebug;
 import me.eccentric_nz.gamemodeinventories.GameModeInventories;
-
-import java.sql.*;
 
 /**
  * @author eccentric_nz
@@ -33,13 +32,13 @@ public class GameModeInventoriesBlocksConverter {
 
     public void convertBlocksTable() {
         try {
-            try (
-                    Connection connection = plugin.getDatabaseConnection();
-                    PreparedStatement statement = connection.prepareStatement("SELECT id, location FROM " + plugin.getPrefix() + "blocks");
-                    ResultSet rs = statement.executeQuery();
-            ) {
+            try (Connection connection = plugin.getDatabaseConnection();
+                    PreparedStatement statement =
+                            connection.prepareStatement("SELECT id, location FROM " + plugin.getPrefix() + "blocks");
+                    ResultSet rs = statement.executeQuery(); ) {
                 if (rs.isBeforeFirst()) {
-                    try (PreparedStatement ps = connection.prepareStatement("UPDATE " + plugin.getPrefix() + "blocks SET worldchunk = ? WHERE id = ?");) {
+                    try (PreparedStatement ps = connection.prepareStatement(
+                            "UPDATE " + plugin.getPrefix() + "blocks SET worldchunk = ? WHERE id = ?"); ) {
                         connection.setAutoCommit(false);
                         long count = 0;
                         while (rs.next()) {

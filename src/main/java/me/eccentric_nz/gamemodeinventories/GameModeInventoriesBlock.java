@@ -3,16 +3,15 @@
  */
 package me.eccentric_nz.gamemodeinventories;
 
-import me.eccentric_nz.gamemodeinventories.database.GameModeInventoriesMySQLConnectionPool;
-import me.eccentric_nz.gamemodeinventories.database.GameModeInventoriesQueueData;
-import me.eccentric_nz.gamemodeinventories.database.GameModeInventoriesRecordingQueue;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
+import me.eccentric_nz.gamemodeinventories.database.GameModeInventoriesMySQLConnectionPool;
+import me.eccentric_nz.gamemodeinventories.database.GameModeInventoriesQueueData;
+import me.eccentric_nz.gamemodeinventories.database.GameModeInventoriesRecordingQueue;
 
 /**
  * @author eccentric_nz
@@ -41,10 +40,8 @@ public class GameModeInventoriesBlock {
 
     public void removeBlock(String gmiwc, String l) {
         String deleteQuery = "DELETE FROM " + plugin.getPrefix() + "blocks WHERE worldchunk = ? AND location = ?";
-        try (
-                Connection connection = plugin.getDatabaseConnection();
-                PreparedStatement ps = connection.prepareStatement(deleteQuery);
-        ) {
+        try (Connection connection = plugin.getDatabaseConnection();
+                PreparedStatement ps = connection.prepareStatement(deleteQuery); ) {
             ps.setString(1, gmiwc);
             ps.setString(2, l);
             ps.executeUpdate();
@@ -58,10 +55,8 @@ public class GameModeInventoriesBlock {
 
     private void saveBlockNow(GameModeInventoriesQueueData data) {
         String insertQuery = "INSERT INTO " + plugin.getPrefix() + "blocks (worldchunk, location) VALUES (?,?)";
-        try (
-                Connection connection = plugin.getDatabaseConnection();
-                PreparedStatement ps = connection.prepareStatement(insertQuery);
-        ) {
+        try (Connection connection = plugin.getDatabaseConnection();
+                PreparedStatement ps = connection.prepareStatement(insertQuery); ) {
             ps.setString(1, data.getWorldChunk());
             ps.setString(2, data.getLocation());
             ps.executeUpdate();

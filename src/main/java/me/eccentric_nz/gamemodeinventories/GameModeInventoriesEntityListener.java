@@ -3,6 +3,8 @@
  */
 package me.eccentric_nz.gamemodeinventories;
 
+import java.util.Arrays;
+import java.util.List;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -12,9 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author eccentric_nz
@@ -34,10 +33,17 @@ public class GameModeInventoriesEntityListener implements Listener {
         }
         if (event.getEntityType().equals(EntityType.ARMOR_STAND)) {
             Location l = event.getLocation();
-            if (!plugin.getConfig().getStringList("track_creative_place.worlds").contains(l.getWorld().getName())) {
+            if (!plugin.getConfig()
+                    .getStringList("track_creative_place.worlds")
+                    .contains(l.getWorld().getName())) {
                 return;
             }
-            List<String> locs = Arrays.asList(l.getBlockX() + "," + l.getBlockZ(), (l.getBlockX()) + "," + (l.getBlockZ() - 1), (l.getBlockX() - 1) + "," + (l.getBlockZ()), (l.getBlockX()) + "," + (l.getBlockZ() + 1), (l.getBlockX() + 1) + "," + (l.getBlockZ()));
+            List<String> locs = Arrays.asList(
+                    l.getBlockX() + "," + l.getBlockZ(),
+                    (l.getBlockX()) + "," + (l.getBlockZ() - 1),
+                    (l.getBlockX() - 1) + "," + (l.getBlockZ()),
+                    (l.getBlockX()) + "," + (l.getBlockZ() + 1),
+                    (l.getBlockX() + 1) + "," + (l.getBlockZ()));
             for (String p : locs) {
                 if (plugin.getPoints().contains(p)) {
                     plugin.getStands().add(event.getEntity().getUniqueId());
@@ -50,7 +56,8 @@ public class GameModeInventoriesEntityListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onArmorStandBreakOrCreativePVP(EntityDamageByEntityEvent event) {
-        if (plugin.getConfig().getBoolean("no_creative_pvp") && event.getEntityType().equals(EntityType.PLAYER)) {
+        if (plugin.getConfig().getBoolean("no_creative_pvp")
+                && event.getEntityType().equals(EntityType.PLAYER)) {
             Entity attacker = event.getDamager();
             if (attacker instanceof Player player) {
                 if (player.getGameMode().equals(GameMode.CREATIVE)) {
@@ -59,8 +66,10 @@ public class GameModeInventoriesEntityListener implements Listener {
                 }
             }
         }
-        if (plugin.getConfig().getBoolean("track_creative_place.enabled") && event.getEntityType().equals(EntityType.ARMOR_STAND)) {
-            if (event.getEntity().getLastDamageCause() != null && plugin.getStands().contains(event.getEntity().getUniqueId())) {
+        if (plugin.getConfig().getBoolean("track_creative_place.enabled")
+                && event.getEntityType().equals(EntityType.ARMOR_STAND)) {
+            if (event.getEntity().getLastDamageCause() != null
+                    && plugin.getStands().contains(event.getEntity().getUniqueId())) {
                 event.setCancelled(true);
                 String message = plugin.getM().getMessage().get("NO_CREATIVE_BREAK");
                 if (plugin.getConfig().getBoolean("track_creative_place.break_no_drop")) {

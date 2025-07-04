@@ -37,13 +37,16 @@ public class GameModeInventoriesTrackBlackListener implements Listener {
         if (block.getType().isAir()) {
             return;
         }
-        if (!plugin.getConfig().getStringList("track_creative_place.worlds").contains(block.getWorld().getName())) {
+        if (!plugin.getConfig()
+                .getStringList("track_creative_place.worlds")
+                .contains(block.getWorld().getName())) {
             return;
         }
         if (plugin.getNoTrackList().contains(block.getType())) {
             return;
         }
-        String gmiwc = block.getWorld().getName() + "," + block.getChunk().getX() + "," + block.getChunk().getZ();
+        String gmiwc = block.getWorld().getName() + "," + block.getChunk().getX() + ","
+                + block.getChunk().getZ();
         if (!plugin.getCreativeBlocks().containsKey(gmiwc)) {
             return;
         }
@@ -65,7 +68,9 @@ public class GameModeInventoriesTrackBlackListener implements Listener {
                                 plugin.getBlockLogger().getCoreProtectAPI().logRemoval(pname, loc, type, data);
                                 break;
                             case LOG_BLOCK:
-                                plugin.getBlockLogger().getLogBlockConsumer().queueBlockBreak(Actor.actorFromEntity(p), block.getState());
+                                plugin.getBlockLogger()
+                                        .getLogBlockConsumer()
+                                        .queueBlockBreak(Actor.actorFromEntity(p), block.getState());
                                 break;
                             default:
                                 break;
@@ -92,28 +97,41 @@ public class GameModeInventoriesTrackBlackListener implements Listener {
             return;
         }
         Material mat = event.getBlock().getType();
-        if ((mat.equals(Material.WITHER_SKELETON_SKULL) || mat.equals(Material.WITHER_SKELETON_WALL_SKULL)) && plugin.getConfig().getBoolean("no_wither_spawn") && GameModeInventoriesConstructedMob.checkBlocks(mat, event.getBlock())) {
+        if ((mat.equals(Material.WITHER_SKELETON_SKULL) || mat.equals(Material.WITHER_SKELETON_WALL_SKULL))
+                && plugin.getConfig().getBoolean("no_wither_spawn")
+                && GameModeInventoriesConstructedMob.checkBlocks(mat, event.getBlock())) {
             event.setCancelled(true);
-        } else if ((mat.equals(Material.CARVED_PUMPKIN) || mat.equals(Material.JACK_O_LANTERN)) && plugin.getConfig().getBoolean("no_golem_spawn") && GameModeInventoriesConstructedMob.checkBlocks(mat, event.getBlock())) {
+        } else if ((mat.equals(Material.CARVED_PUMPKIN) || mat.equals(Material.JACK_O_LANTERN))
+                && plugin.getConfig().getBoolean("no_golem_spawn")
+                && GameModeInventoriesConstructedMob.checkBlocks(mat, event.getBlock())) {
             event.setCancelled(true);
         }
-        if (plugin.getConfig().getBoolean("creative_blacklist") && plugin.getBlackList().contains(mat) && !GameModeInventoriesBypass.canBypass(p, "blacklist", plugin)) {
+        if (plugin.getConfig().getBoolean("creative_blacklist")
+                && plugin.getBlackList().contains(mat)
+                && !GameModeInventoriesBypass.canBypass(p, "blacklist", plugin)) {
             event.setCancelled(true);
             if (!plugin.getConfig().getBoolean("dont_spam_chat")) {
-                p.sendMessage(plugin.MY_PLUGIN_NAME + String.format(plugin.getM().getMessage().get("NO_CREATIVE_PLACE"), mat.toString()));
+                p.sendMessage(plugin.MY_PLUGIN_NAME
+                        + String.format(plugin.getM().getMessage().get("NO_CREATIVE_PLACE"), mat.toString()));
             }
             return;
         }
         if (plugin.getConfig().getBoolean("track_creative_place.enabled")) {
             Block block = event.getBlock();
-            if (!plugin.getConfig().getStringList("track_creative_place.worlds").contains(block.getWorld().getName())) {
+            if (!plugin.getConfig()
+                    .getStringList("track_creative_place.worlds")
+                    .contains(block.getWorld().getName())) {
                 return;
             }
             if (plugin.getNoTrackList().contains(mat)) {
                 return;
             }
-            String gmiwc = block.getWorld().getName() + "," + block.getChunk().getX() + "," + block.getChunk().getZ();
-            if (!plugin.getCreativeBlocks().containsKey(gmiwc) || !plugin.getCreativeBlocks().get(gmiwc).contains(block.getLocation().toString())) {
+            String gmiwc = block.getWorld().getName() + "," + block.getChunk().getX() + ","
+                    + block.getChunk().getZ();
+            if (!plugin.getCreativeBlocks().containsKey(gmiwc)
+                    || !plugin.getCreativeBlocks()
+                            .get(gmiwc)
+                            .contains(block.getLocation().toString())) {
                 plugin.getBlock().addBlock(gmiwc, block.getLocation().toString());
             }
         }

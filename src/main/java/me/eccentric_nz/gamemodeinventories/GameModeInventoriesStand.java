@@ -23,18 +23,18 @@ public class GameModeInventoriesStand {
 
     public void loadStands() {
         if (plugin.getConfig().getBoolean("track_creative_place.enabled")) {
-            try (
-                    Connection connection = plugin.getDatabaseConnection();
-                    PreparedStatement statement = connection.prepareStatement("SELECT uuid FROM " + plugin.getPrefix() + "stands");
-                    ResultSet rs = statement.executeQuery();
-            ) {
+            try (Connection connection = plugin.getDatabaseConnection();
+                    PreparedStatement statement =
+                            connection.prepareStatement("SELECT uuid FROM " + plugin.getPrefix() + "stands");
+                    ResultSet rs = statement.executeQuery(); ) {
                 if (rs.isBeforeFirst()) {
                     while (rs.next()) {
                         plugin.getStands().add(UUID.fromString(rs.getString("uuid")));
                     }
                 }
                 // clear stands
-                try (PreparedStatement ps = connection.prepareStatement("DELETE FROM " + plugin.getPrefix() + "stands");) {
+                try (PreparedStatement ps =
+                        connection.prepareStatement("DELETE FROM " + plugin.getPrefix() + "stands"); ) {
                     ps.executeUpdate();
                 }
             } catch (SQLException e) {
@@ -44,10 +44,9 @@ public class GameModeInventoriesStand {
     }
 
     public void saveStands() {
-        try (
-                Connection connection = plugin.getDatabaseConnection();
-                PreparedStatement ps = connection.prepareStatement("INSERT INTO " + plugin.getPrefix() + "stands (uuid) VALUES (?)");
-        ) {
+        try (Connection connection = plugin.getDatabaseConnection();
+                PreparedStatement ps = connection.prepareStatement(
+                        "INSERT INTO " + plugin.getPrefix() + "stands (uuid) VALUES (?)"); ) {
             for (UUID uuid : plugin.getStands()) {
                 ps.setString(1, uuid.toString());
                 ps.executeUpdate();

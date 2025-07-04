@@ -3,15 +3,14 @@
  */
 package me.eccentric_nz.gamemodeinventories;
 
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * @author eccentric_nz
@@ -164,7 +163,8 @@ public class GameModeInventoriesConfig {
                 if (entry.getKey().equals("track_creative_place.enabled")) {
                     // check for previous enrty
                     if (plugin.getConfig().contains("track_creative_place")) {
-                        plugin.getConfig().set(entry.getKey(), plugin.getConfig().getBoolean("track_creative_place"));
+                        plugin.getConfig()
+                                .set(entry.getKey(), plugin.getConfig().getBoolean("track_creative_place"));
                     } else {
                         plugin.getConfig().set(entry.getKey(), entry.getValue());
                     }

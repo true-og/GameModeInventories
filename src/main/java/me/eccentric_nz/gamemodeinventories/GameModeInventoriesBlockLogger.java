@@ -5,11 +5,10 @@ package me.eccentric_nz.gamemodeinventories;
 
 import de.diddiz.LogBlock.Consumer;
 import de.diddiz.LogBlock.LogBlock;
+import java.util.logging.Level;
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 import org.bukkit.plugin.PluginManager;
-
-import java.util.logging.Level;
 
 /**
  * @author eccentric_nz
@@ -76,7 +75,6 @@ public class GameModeInventoriesBlockLogger {
     }
 
     public enum GMIBlockLogger {
-
         CORE_PROTECT,
         LOG_BLOCK
     }

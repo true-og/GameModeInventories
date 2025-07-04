@@ -1,5 +1,12 @@
 package me.eccentric_nz.gamemodeinventories;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,14 +26,6 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-
 public class GameModeInventoriesListener implements Listener {
 
     private final GameModeInventories plugin;
@@ -38,7 +37,8 @@ public class GameModeInventoriesListener implements Listener {
             try {
                 containers.add(Material.valueOf(m));
             } catch (IllegalArgumentException e) {
-                plugin.getLogger().log(Level.INFO, plugin.MY_PLUGIN_NAME + "Illegal material name " + m + " in containers list!");
+                plugin.getLogger()
+                        .log(Level.INFO, plugin.MY_PLUGIN_NAME + "Illegal material name " + m + " in containers list!");
             }
         }
     }
@@ -47,7 +47,9 @@ public class GameModeInventoriesListener implements Listener {
     public void onGameModeChange(PlayerGameModeChangeEvent event) {
         Player p = event.getPlayer();
         GameMode newGM = event.getNewGameMode();
-        if (newGM.equals(GameMode.SPECTATOR) && plugin.getConfig().getBoolean("restrict_spectator") && !p.hasPermission("gamemodeinventories.spectator")) {
+        if (newGM.equals(GameMode.SPECTATOR)
+                && plugin.getConfig().getBoolean("restrict_spectator")
+                && !p.hasPermission("gamemodeinventories.spectator")) {
             event.setCancelled(true);
             p.sendMessage(plugin.MY_PLUGIN_NAME + plugin.getM().getMessage().get("NO_SPECTATOR"));
             return;
@@ -57,19 +59,20 @@ public class GameModeInventoriesListener implements Listener {
                 plugin.getInventoryHandler().switchInventories(p, newGM);
                 if (newGM.equals(GameMode.CREATIVE) && plugin.getConfig().getBoolean("creative_world.switch_to")) {
                     // get spawn location
-                    Location loc = plugin.getServer().getWorld(plugin.getConfig().getString("creative_world.world")).getSpawnLocation();
+                    Location loc = plugin.getServer()
+                            .getWorld(plugin.getConfig().getString("creative_world.world"))
+                            .getSpawnLocation();
                     if (plugin.getConfig().getString("creative_world.location").equals("last_known")) {
-                        //get last known position in world
+                        // get last known position in world
                         String uuid = p.getUniqueId().toString();
                         // player changed worlds, record last location
                         // check if the player has a record for this world
-                        try (
-                                Connection connection = plugin.getDatabaseConnection();
-                                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + plugin.getPrefix() + "worlds WHERE uuid = ? AND world = ?");
-                        ) {
+                        try (Connection connection = plugin.getDatabaseConnection();
+                                PreparedStatement statement = connection.prepareStatement("SELECT * FROM "
+                                        + plugin.getPrefix() + "worlds WHERE uuid = ? AND world = ?"); ) {
                             statement.setString(1, uuid);
                             statement.setString(2, plugin.getConfig().getString("creative_world.world"));
-                            try (ResultSet rs = statement.executeQuery();) {
+                            try (ResultSet rs = statement.executeQuery(); ) {
                                 if (rs.next()) {
                                     World w = plugin.getServer().getWorld(rs.getString("world"));
                                     if (w != null) {
@@ -101,15 +104,20 @@ public class GameModeInventoriesListener implements Listener {
             Block b = event.getClickedBlock();
             if (b != null) {
                 Player p = event.getPlayer();
-                if (p.isSneaking() && isBlock(p.getInventory().getItemInMainHand().getType())) {
+                if (p.isSneaking()
+                        && isBlock(p.getInventory().getItemInMainHand().getType())) {
                     return;
                 }
                 Material m = b.getType();
                 GameMode gm = p.getGameMode();
-                if (gm.equals(GameMode.CREATIVE) && containers.contains(m) && !GameModeInventoriesBypass.canBypass(p, "inventories", plugin) && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+                if (gm.equals(GameMode.CREATIVE)
+                        && containers.contains(m)
+                        && !GameModeInventoriesBypass.canBypass(p, "inventories", plugin)
+                        && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
                     event.setCancelled(true);
                     if (!plugin.getConfig().getBoolean("dont_spam_chat")) {
-                        p.sendMessage(plugin.MY_PLUGIN_NAME + plugin.getM().getMessage().get("NO_CREATIVE_INVENTORY"));
+                        p.sendMessage(plugin.MY_PLUGIN_NAME
+                                + plugin.getM().getMessage().get("NO_CREATIVE_INVENTORY"));
                     }
                 }
             }
@@ -122,7 +130,8 @@ public class GameModeInventoriesListener implements Listener {
             Inventory inv = event.getInventory();
             if (inv.getType().equals(InventoryType.WORKBENCH)) {
                 Player p = (Player) event.getPlayer();
-                if (p.getGameMode().equals(GameMode.CREATIVE) && !GameModeInventoriesBypass.canBypass(p, "inventories", plugin)) {
+                if (p.getGameMode().equals(GameMode.CREATIVE)
+                        && !GameModeInventoriesBypass.canBypass(p, "inventories", plugin)) {
                     boolean empty = true;
                     for (ItemStack is : inv.getContents()) {
                         if (!is.getType().isAir()) {
@@ -132,7 +141,8 @@ public class GameModeInventoriesListener implements Listener {
                     if (!empty) {
                         inv.clear();
                         if (!plugin.getConfig().getBoolean("dont_spam_chat")) {
-                            p.sendMessage(plugin.MY_PLUGIN_NAME + plugin.getM().getMessage().get("NO_WORKBENCH_DROPS"));
+                            p.sendMessage(plugin.MY_PLUGIN_NAME
+                                    + plugin.getM().getMessage().get("NO_WORKBENCH_DROPS"));
                         }
                     }
                 }
@@ -145,9 +155,12 @@ public class GameModeInventoriesListener implements Listener {
         if (plugin.getConfig().getBoolean("restrict_creative")) {
             Entity entity = event.getRightClicked();
             Player p = event.getPlayer();
-            if (p.getGameMode().equals(GameMode.CREATIVE) && plugin.getInventoryHandler().isInstanceOf(entity) && !GameModeInventoriesBypass.canBypass(p, "inventories", plugin)) {
+            if (p.getGameMode().equals(GameMode.CREATIVE)
+                    && plugin.getInventoryHandler().isInstanceOf(entity)
+                    && !GameModeInventoriesBypass.canBypass(p, "inventories", plugin)) {
                 if (!plugin.getConfig().getBoolean("dont_spam_chat")) {
-                    p.sendMessage(plugin.MY_PLUGIN_NAME + plugin.getM().getMessage().get("NO_CREATIVE_INVENTORY"));
+                    p.sendMessage(
+                            plugin.MY_PLUGIN_NAME + plugin.getM().getMessage().get("NO_CREATIVE_INVENTORY"));
                 }
                 event.setCancelled(true);
             }
@@ -156,7 +169,7 @@ public class GameModeInventoriesListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
-        //treat it the same as interacting with an entity in general
+        // treat it the same as interacting with an entity in general
         onEntityClick((PlayerInteractEntityEvent) event);
     }
 
@@ -168,7 +181,8 @@ public class GameModeInventoriesListener implements Listener {
             if (gm.equals(GameMode.CREATIVE) && !GameModeInventoriesBypass.canBypass(p, "items", plugin)) {
                 event.setCancelled(true);
                 if (!plugin.getConfig().getBoolean("dont_spam_chat")) {
-                    p.sendMessage(plugin.MY_PLUGIN_NAME + plugin.getM().getMessage().get("NO_PLAYER_DROPS"));
+                    p.sendMessage(
+                            plugin.MY_PLUGIN_NAME + plugin.getM().getMessage().get("NO_PLAYER_DROPS"));
                 }
             }
         }
@@ -181,7 +195,8 @@ public class GameModeInventoriesListener implements Listener {
             if (gm.equals(GameMode.CREATIVE) && !GameModeInventoriesBypass.canBypass(player, "items", plugin)) {
                 event.setCancelled(true);
                 if (!plugin.getConfig().getBoolean("dont_spam_chat")) {
-                    player.sendMessage(plugin.MY_PLUGIN_NAME + plugin.getM().getMessage().get("NO_CREATIVE_PICKUP"));
+                    player.sendMessage(
+                            plugin.MY_PLUGIN_NAME + plugin.getM().getMessage().get("NO_CREATIVE_PICKUP"));
                 }
             }
         }
@@ -189,13 +204,16 @@ public class GameModeInventoriesListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void noHorseInventory(InventoryOpenEvent event) {
-        if (plugin.getConfig().getBoolean("restrict_creative") && plugin.getInventoryHandler().isInstanceOf(event.getInventory().getHolder())) {
+        if (plugin.getConfig().getBoolean("restrict_creative")
+                && plugin.getInventoryHandler()
+                        .isInstanceOf(event.getInventory().getHolder())) {
             Player p = (Player) event.getPlayer();
             GameMode gm = p.getGameMode();
             if (gm.equals(GameMode.CREATIVE) && !GameModeInventoriesBypass.canBypass(p, "inventories", plugin)) {
                 event.setCancelled(true);
                 if (!plugin.getConfig().getBoolean("dont_spam_chat")) {
-                    p.sendMessage(plugin.MY_PLUGIN_NAME + plugin.getM().getMessage().get("NO_CREATIVE_HORSE"));
+                    p.sendMessage(
+                            plugin.MY_PLUGIN_NAME + plugin.getM().getMessage().get("NO_CREATIVE_HORSE"));
                 }
             }
         }

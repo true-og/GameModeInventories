@@ -4,7 +4,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class GameModeInventoriesRecordingQueue {
 
-    private static final LinkedBlockingQueue<GameModeInventoriesQueueData> QUEUE = new LinkedBlockingQueue<GameModeInventoriesQueueData>();
+    private static final LinkedBlockingQueue<GameModeInventoriesQueueData> QUEUE =
+            new LinkedBlockingQueue<GameModeInventoriesQueueData>();
 
     /**
      * @return the size of the QUEUE
