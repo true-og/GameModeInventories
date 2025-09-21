@@ -2,7 +2,7 @@ plugins {
     id("java")
     id("java-library")
     id("com.diffplug.spotless") version "7.0.4"
-    id("com.gradleup.shadow") version "8.3.6"
+    id("com.gradleup.shadow") version "8.3.8"
     eclipse
 }
 
