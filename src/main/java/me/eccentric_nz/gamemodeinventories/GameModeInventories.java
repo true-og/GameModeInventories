@@ -58,27 +58,23 @@ public class GameModeInventories extends JavaPlugin {
         Version minversion = new Version("1.13");
         // check CraftBukkit version
         if (bukkitversion.compareTo(minversion) >= 0) {
-            saveDefaultConfig();
             GameModeInventoriesConfig tc = new GameModeInventoriesConfig(this);
             tc.checkConfig();
             loadDatabase();
             // update database add and populate block fields
             if (!getConfig().getBoolean("blocks_conversion_done")) {
                 new GameModeInventoriesBlocksConverter(this).convertBlocksTable();
-                getConfig().set("blocks_conversion_done", true);
-                saveConfig();
                 plugin.getLogger().log(Level.INFO, "[GameModeInventories] Blocks conversion successful :)");
+                plugin.getLogger().log(Level.INFO, "[GameModeInventories] config.yml is immutable; leaving blocks_conversion_done unchanged.");
             }
             // check if creative world exists
             if (getConfig().getBoolean("creative_world.switch_to")) {
                 World creative = getServer().getWorld(getConfig().getString("creative_world.world"));
                 if (creative == null) {
-                    getConfig().set("creative_world.switch_to", false);
-                    saveConfig();
                     plugin.getLogger()
                             .log(
                                     Level.INFO,
-                                    "[GameModeInventories] Creative world specified in the config was not found, disabling world switching!");
+                                    "[GameModeInventories] Creative world specified in the config was not found; world switching will stay disabled until config.yml is updated manually.");
                 }
             }
             block = new GameModeInventoriesBlock(this);
