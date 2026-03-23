@@ -65,7 +65,10 @@ public class GameModeInventories extends JavaPlugin {
             if (!getConfig().getBoolean("blocks_conversion_done")) {
                 new GameModeInventoriesBlocksConverter(this).convertBlocksTable();
                 plugin.getLogger().log(Level.INFO, "[GameModeInventories] Blocks conversion successful :)");
-                plugin.getLogger().log(Level.INFO, "[GameModeInventories] config.yml is immutable; leaving blocks_conversion_done unchanged.");
+                plugin.getLogger()
+                        .log(
+                                Level.INFO,
+                                "[GameModeInventories] config.yml is immutable; leaving blocks_conversion_done unchanged.");
             }
             // check if creative world exists
             if (getConfig().getBoolean("creative_world.switch_to")) {
