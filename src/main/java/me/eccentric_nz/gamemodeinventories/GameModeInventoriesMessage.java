@@ -97,7 +97,7 @@ public class GameModeInventoriesMessage {
         int m = 0;
         for (Map.Entry<String, String> entry : messageOptions.entrySet()) {
             if (!messagesConfig.contains(entry.getKey())) {
-                plugin.getConfig().set(entry.getKey(), entry.getValue());
+                messagesConfig.set(entry.getKey(), entry.getValue());
                 m++;
             }
         }

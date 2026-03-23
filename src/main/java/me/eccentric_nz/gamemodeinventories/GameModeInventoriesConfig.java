@@ -142,76 +142,64 @@ public class GameModeInventoriesConfig {
     }
 
     public void checkConfig() {
-        int i = 0;
+        int missing = 0;
         // string values
         for (Map.Entry<String, String> entry : strOptions.entrySet()) {
             if (!config.contains(entry.getKey())) {
-                plugin.getConfig().set(entry.getKey(), entry.getValue());
-                i++;
+                missing++;
+                plugin.getLogger().log(Level.WARNING, "Missing config option: " + entry.getKey());
             }
         }
         // int values
         for (Map.Entry<String, Integer> entry : intOptions.entrySet()) {
             if (!config.contains(entry.getKey())) {
-                plugin.getConfig().set(entry.getKey(), entry.getValue());
-                i++;
+                missing++;
+                plugin.getLogger().log(Level.WARNING, "Missing config option: " + entry.getKey());
             }
         }
         // boolean values
         for (Map.Entry<String, Boolean> entry : boolOptions.entrySet()) {
             if (!config.contains(entry.getKey())) {
-                if (entry.getKey().equals("track_creative_place.enabled")) {
-                    // check for previous enrty
-                    if (plugin.getConfig().contains("track_creative_place")) {
-                        plugin.getConfig()
-                                .set(entry.getKey(), plugin.getConfig().getBoolean("track_creative_place"));
-                    } else {
-                        plugin.getConfig().set(entry.getKey(), entry.getValue());
-                    }
-                }
-                plugin.getConfig().set(entry.getKey(), entry.getValue());
-                i++;
+                missing++;
+                plugin.getLogger().log(Level.WARNING, "Missing config option: " + entry.getKey());
             }
         }
         if (!config.contains("containers")) {
-            plugin.getConfig().set("containers", containers);
-            i++;
+            missing++;
+            plugin.getLogger().log(Level.WARNING, "Missing config option: containers");
         }
         if (!config.contains("blacklist")) {
-            plugin.getConfig().set("blacklist", bl);
-            i++;
-        } else if (plugin.getConfig().getStringList("blacklist").contains("ZOMBIE_PIGMAN_SPAWN_EGG")) {
-            List<String> black = plugin.getConfig().getStringList("blacklist");
-            black.remove("ZOMBIE_PIGMAN_SPAWN_EGG");
-            black.add("ZOMBIFIED_PIGLIN_SPAWN_EGG");
-            plugin.getConfig().set("blacklist", black);
-            i++;
+            missing++;
+            plugin.getLogger().log(Level.WARNING, "Missing config option: blacklist");
+        } else if (config.getStringList("blacklist").contains("ZOMBIE_PIGMAN_SPAWN_EGG")) {
+            plugin.getLogger()
+                    .log(
+                            Level.WARNING,
+                            "config.yml still contains ZOMBIE_PIGMAN_SPAWN_EGG; update it manually to ZOMBIFIED_PIGLIN_SPAWN_EGG if needed.");
         }
         if (!config.contains("commands")) {
-            plugin.getConfig().set("commands", com);
-            i++;
+            missing++;
+            plugin.getLogger().log(Level.WARNING, "Missing config option: commands");
         }
         if (!config.contains("track_creative_place.worlds")) {
-            plugin.getConfig().set("track_creative_place.worlds", wor);
-            i++;
+            missing++;
+            plugin.getLogger().log(Level.WARNING, "Missing config option: track_creative_place.worlds");
         }
         if (!config.contains("track_creative_place.dont_track")) {
-            plugin.getConfig().set("track_creative_place.dont_track", no);
-            i++;
+            missing++;
+            plugin.getLogger().log(Level.WARNING, "Missing config option: track_creative_place.dont_track");
         }
         if (config.contains("storage.mysql.url")) {
-            String url = config.getString("storage.mysql.url");
-            // mysql://localhost:3306/GMI
-            String[] split = url.split("/");
-            String[] sp = split[2].split(":");
-            plugin.getConfig().set("storage.mysql.server", sp[0]);
-            plugin.getConfig().set("storage.mysql.port", sp[1]);
-            plugin.getConfig().set("storage.mysql.database", split[3]);
-            plugin.getConfig().set("storage.mysql.url", null);
+            plugin.getLogger()
+                    .log(
+                            Level.WARNING,
+                            "Legacy storage.mysql.url is still present in config.yml; update it manually because automatic migration is disabled.");
         }
-        if (i > 0) {
-            plugin.getLogger().log(Level.INFO, "Added " + i + " new items to config");
+        if (missing > 0) {
+            plugin.getLogger()
+                    .log(
+                            Level.WARNING,
+                            "config.yml is immutable; missing options were detected but not written automatically.");
         }
-        plugin.saveConfig();
     }
 }

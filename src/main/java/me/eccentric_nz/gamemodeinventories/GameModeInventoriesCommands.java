@@ -70,11 +70,8 @@ public class GameModeInventoriesCommands implements CommandExecutor, TabComplete
             if (sender.hasPermission("gamemodeinventories.admin")) {
                 String option = args[0].toLowerCase(Locale.ENGLISH);
                 if (args.length == 1 && firstArgs.containsKey(option)) {
-                    boolean bool = !plugin.getConfig().getBoolean(firstArgs.get(option));
-                    plugin.getConfig().set(firstArgs.get(option), bool);
                     sender.sendMessage(plugin.MY_PLUGIN_NAME
-                            + String.format(plugin.getM().getMessage().get("CONFIG_SET"), option, bool));
-                    plugin.saveConfig();
+                            + "config.yml is immutable; update '" + option + "' manually if you want to change it.");
                     return true;
                 } else if (args.length == 2 && option.equals("kit")) {
                     String uuid = "00000000-0000-0000-0000-000000000000";
