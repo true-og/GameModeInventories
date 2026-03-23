@@ -1,64 +1,64 @@
 armor: true
 debug: false
 debug_level: ERROR
-dont_spam_chat: false
+dont_spam_chat: true
 enderchest: true
 no_creative_pvp: false
-no_drops: false
-no_falling_drops: false
-no_pickups: false
+no_drops: true
+no_falling_drops: true
+no_pickups: true
 no_villager_trade: false
-no_wither_spawn: false
-no_golem_spawn: false
-remove_potions: true
-restrict_creative: false
+no_wither_spawn: true
+no_golem_spawn: true
+remove_potions: false
+restrict_creative: true
 containers:
-  - ANVIL
-  - BARREL
-  - BEACON
-  - BEE_NEST
-  - BEEHIVE
-  - BLACK_SHULKER_BOX
-  - BLAST_FURNACE
-  - BLUE_SHULKER_BOX
-  - BREWING_STAND
-  - BROWN_SHULKER_BOX
-  - CAMPFIRE
-  - CARTOGRAPHY_TABLE
-  - CHEST
-  - CHIPPED_ANVIL
-  - COMPOSTER
-  - CYAN_SHULKER_BOX
-  - DAMAGED_ANVIL
-  - DISPENSER
-  - DROPPER
-  - ENCHANTING_TABLE
-  - ENDER_CHEST
-  - FLETCHING_TABLE
-  - FURNACE
-  - GRAY_SHULKER_BOX
-  - GREEN_SHULKER_BOX
-  - GRINDSTONE
-  - HOPPER
-  - JUKEBOX
-  - LECTERN
-  - LIGHT_BLUE_SHULKER_BOX
-  - LIGHT_GRAY_SHULKER_BOX
-  - LIME_SHULKER_BOX
-  - LOOM
-  - MAGENTA_SHULKER_BOX
-  - ORANGE_SHULKER_BOX
-  - PINK_SHULKER_BOX
-  - PURPLE_SHULKER_BOX
-  - RED_SHULKER_BOX
-  - SHULKER_BOX
-  - SMITHING_TABLE
-  - SMOKER
-  - SOUL_CAMPFIRE
-  - STONECUTTER
-  - TRAPPED_CHEST
-  - WHITE_SHULKER_BOX
-  - YELLOW_SHULKER_BOX
+- ANVIL
+- BARREL
+- BEACON
+- BEE_NEST
+- BEEHIVE
+- BLACK_SHULKER_BOX
+- BLAST_FURNACE
+- BLUE_SHULKER_BOX
+- BREWING_STAND
+- BROWN_SHULKER_BOX
+- CAMPFIRE
+- CARTOGRAPHY_TABLE
+- CHEST
+- CHIPPED_ANVIL
+- COMPOSTER
+- CYAN_SHULKER_BOX
+- DAMAGED_ANVIL
+- DISPENSER
+- DROPPER
+- ENCHANTING_TABLE
+- ENDER_CHEST
+- FLETCHING_TABLE
+- FURNACE
+- GRAY_SHULKER_BOX
+- GREEN_SHULKER_BOX
+- GRINDSTONE
+- HOPPER
+- JUKEBOX
+- LECTERN
+- LIGHT_BLUE_SHULKER_BOX
+- LIGHT_GRAY_SHULKER_BOX
+- LIME_SHULKER_BOX
+- LOOM
+- MAGENTA_SHULKER_BOX
+- ORANGE_SHULKER_BOX
+- PINK_SHULKER_BOX
+- PURPLE_SHULKER_BOX
+- RED_SHULKER_BOX
+- SHULKER_BOX
+- SMITHING_TABLE
+- SMOKER
+- SOUL_CAMPFIRE
+- STONECUTTER
+- TRAPPED_CHEST
+- WHITE_SHULKER_BOX
+- YELLOW_SHULKER_BOX
 save_on_death: true
 survival_on_world_change: false
 xp: true
@@ -69,25 +69,57 @@ track_creative_place:
   attached_block: false
   no_seeds_from_pumpkin: false
   worlds:
-    - world
+  - world
   dont_track:
-    - STONE
-    - DIRT
+  - STONE
+  - DIRT
   dont_track_is_whitelist: false
-creative_blacklist: false
+creative_blacklist: true
 blacklist:
-  - TNT
-  - BEDROCK
-  - LAVA_BUCKET
-  - ARMOR_STAND
+- BEDROCK
+- DEEPSLATE_DIAMOND_ORE
+- DIAMOND
+- DIAMOND_AXE
+- DIAMOND_BLOCK
+- DIAMOND_BOOTS
+- DIAMOND_CHESTPLATE
+- DIAMOND_HELMET
+- DIAMOND_HOE
+- DIAMOND_HORSE_ARMOR
+- DIAMOND_LEGGINGS
+- DIAMOND_ORE
+- DIAMOND_PICKAXE
+- DIAMOND_SHOVEL
+- DIAMOND_SWORD
+- LAVA_BUCKET
+- NETHER_STAR
+- PRISMARINE_SHARD
+- TNT
 break_bedrock: false
-command_blacklist: false
+command_blacklist: true
 commands:
+  - areashop
+  - bounty
+  - buy
+  - deposit
+  - ec
+  - echest
+  - enderchest
+  - ebal
+  - ebalance
+  - ebalancetop
+  - ebaltop
+  - eco
   - give
   - i
-  - buy
+  - item
+  - money
+  - pay
+  - qs
+  - quickshop
   - sell
-restrict_spectator: false
+  - withdraw
+restrict_spectator: true
 bypass:
   inventories: true
   items: true
@@ -101,13 +133,13 @@ storage:
   mysql:
     server: localhost
     port: 3306
-    database: GMI
-    user: bukkit
-    password: mysecurepassword
+    database: gamemodeinventories
+    user: ^{MARIADB_USER}
+    password: ^{MARIADB_PASSWORD}
     pool_size: 10
     test_connection: false
     useSSL: true
-  database: sqlite
+  database: mysql
   prefix: ''
 creative_world:
   location: last_known
