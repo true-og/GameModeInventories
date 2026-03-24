@@ -1,6 +1,7 @@
 package me.eccentric_nz.gamemodeinventories;
 
 import com.zaxxer.hikari.HikariDataSource;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -36,6 +39,7 @@ public class GameModeInventories extends JavaPlugin {
     private GMIDebug db_level;
     private String prefix;
     private HikariDataSource dataSource;
+    private FileConfiguration canonicalConfig;
 
     @Override
     public void onDisable() {
@@ -54,6 +58,11 @@ public class GameModeInventories extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         PluginManager pm = Bukkit.getServer().getPluginManager();
+        loadCanonicalConfig();
+        if (canonicalConfig == null) {
+            pm.disablePlugin(this);
+            return;
+        }
         Version bukkitversion = getServerVersion(getServer().getVersion());
         Version minversion = new Version("1.13");
         // check CraftBukkit version
@@ -120,6 +129,26 @@ public class GameModeInventories extends JavaPlugin {
                             + "This plugin requires CraftBukkit/Spigot 1.9 or higher, disabling...");
             pm.disablePlugin(this);
         }
+    }
+
+    private void loadCanonicalConfig() {
+        File configFile = new File(getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
+            getLogger()
+                    .log(
+                            Level.SEVERE,
+                            "config.yml was not found at "
+                                    + configFile.getAbsolutePath()
+                                    + ". This plugin only reads config.yml and will not generate or modify it.");
+            canonicalConfig = null;
+            return;
+        }
+        canonicalConfig = YamlConfiguration.loadConfiguration(configFile);
+    }
+
+    @Override
+    public FileConfiguration getConfig() {
+        return (canonicalConfig != null) ? canonicalConfig : super.getConfig();
     }
 
     private Version getServerVersion(String s) {
