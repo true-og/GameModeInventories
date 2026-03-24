@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * @author eccentric_nz
@@ -18,7 +17,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public class GameModeInventoriesConfig {
 
     private final GameModeInventories plugin;
-    private final FileConfiguration config;
     private final File configFile;
     HashMap<String, String> strOptions = new HashMap<>();
     HashMap<String, Integer> intOptions = new HashMap<>();
@@ -32,7 +30,6 @@ public class GameModeInventoriesConfig {
     public GameModeInventoriesConfig(GameModeInventories plugin) {
         this.plugin = plugin;
         configFile = new File(plugin.getDataFolder(), "config.yml");
-        config = YamlConfiguration.loadConfiguration(configFile);
         // string
         strOptions.put("debug_level", "ERROR");
         strOptions.put("storage.mysql.server", "localhost");
@@ -142,6 +139,16 @@ public class GameModeInventoriesConfig {
     }
 
     public void checkConfig() {
+        if (!configFile.exists()) {
+            plugin.getLogger()
+                    .log(
+                            Level.SEVERE,
+                            "config.yml was not found at "
+                                    + configFile.getAbsolutePath()
+                                    + ". This plugin only reads config.yml and will not generate or modify it.");
+            return;
+        }
+        FileConfiguration config = plugin.getConfig();
         int missing = 0;
         // string values
         for (Map.Entry<String, String> entry : strOptions.entrySet()) {
