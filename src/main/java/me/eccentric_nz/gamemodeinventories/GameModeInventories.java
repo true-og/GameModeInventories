@@ -43,15 +43,20 @@ public class GameModeInventories extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getServer().getOnlinePlayers().forEach((p) -> {
-            if (p.hasPermission("gamemodeinventories.use")) {
-                if (p.isOnline()) {
-                    inventoryHandler.switchInventories(p, p.getGameMode());
+        if (inventoryHandler != null) {
+            getServer().getOnlinePlayers().forEach((p) -> {
+                if (p.hasPermission("gamemodeinventories.use")) {
+                    if (p.isOnline()) {
+                        inventoryHandler.switchInventories(p, p.getGameMode());
+                    }
                 }
-            }
-        });
-        new GameModeInventoriesStand(this).saveStands();
-        new GameModeInventoriesQueueDrain(this).forceDrainQueue();
+            });
+        }
+        if (hasDatabaseConnection()) {
+            new GameModeInventoriesStand(this).saveStands();
+            new GameModeInventoriesQueueDrain(this).forceDrainQueue();
+            dataSource.close();
+        }
     }
 
     @Override
@@ -70,6 +75,11 @@ public class GameModeInventories extends JavaPlugin {
             GameModeInventoriesConfig tc = new GameModeInventoriesConfig(this);
             tc.checkConfig();
             loadDatabase();
+            if (!hasDatabaseConnection()) {
+                getLogger().log(Level.SEVERE, "Database setup failed, disabling plugin.");
+                pm.disablePlugin(this);
+                return;
+            }
             // update database add and populate block fields
             if (!getConfig().getBoolean("blocks_conversion_done")) {
                 new GameModeInventoriesBlocksConverter(this).convertBlocksTable();
@@ -134,14 +144,8 @@ public class GameModeInventories extends JavaPlugin {
     private void loadCanonicalConfig() {
         File configFile = new File(getDataFolder(), "config.yml");
         if (!configFile.exists()) {
-            getLogger()
-                    .log(
-                            Level.SEVERE,
-                            "config.yml was not found at "
-                                    + configFile.getAbsolutePath()
-                                    + ". This plugin only reads config.yml and will not generate or modify it.");
-            canonicalConfig = null;
-            return;
+            saveResource("config.yml", false);
+            getLogger().log(Level.INFO, "Copied default config.yml to " + configFile.getAbsolutePath());
         }
         canonicalConfig = YamlConfiguration.loadConfiguration(configFile);
     }
@@ -194,12 +198,20 @@ public class GameModeInventories extends JavaPlugin {
 
     public Connection getDatabaseConnection() {
         Connection con = null;
+        if (dataSource == null) {
+            debug("Could not get database connection: datasource is not initialized");
+            return null;
+        }
         try {
             con = dataSource.getConnection();
         } catch (SQLException e) {
             debug("Could not get database connection: " + e.getMessage());
         }
         return con;
+    }
+
+    public boolean hasDatabaseConnection() {
+        return dataSource != null && !dataSource.isClosed();
     }
 
     /**
