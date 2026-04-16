@@ -32,49 +32,79 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 public class GameModeInventoriesBukkitSerialization {
 
     public static String toDatabase(ItemStack[] inventory) {
+
         try {
+
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             // Write the size of the inventory
             try (BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
+
                 // Write the size of the inventory
                 dataOutput.writeInt(inventory.length);
                 // Save every element in the list
                 for (ItemStack is : inventory) {
+
                     // check for player heads with no data...
                     if (is != null && is.getType().equals(Material.PLAYER_HEAD)) {
+
                         if (is.hasItemMeta()) {
+
                             SkullMeta skullMeta = (SkullMeta) is.getItemMeta();
                             if (skullMeta.getOwnerProfile() == null) {
+
                                 // remove item meta
                                 is.setItemMeta(null);
+
                             }
+
                         }
+
                     }
+
                     dataOutput.writeObject(is);
+
                 }
+
                 // Serialize that array
             }
+
             return Base64Coder.encodeLines(outputStream.toByteArray());
+
         } catch (IOException e) {
+
             throw new IllegalStateException("Unable to save item stacks.", e);
+
         }
+
     }
 
     public static ItemStack[] fromDatabase(String data) throws IOException {
+
         try {
+
             ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
             ItemStack[] inventory;
             try (BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
+
                 int size = dataInput.readInt();
                 inventory = new ItemStack[size];
                 // Read the serialized inventory
                 for (int i = 0; i < size; i++) {
+
                     inventory[i] = (ItemStack) dataInput.readObject();
+
                 }
+
             }
+
             return inventory;
+
         } catch (ClassNotFoundException e) {
+
             throw new IOException("Unable to decode class type.", e);
+
         }
+
     }
+
 }

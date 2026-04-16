@@ -19,35 +19,50 @@ public class GameModeInventoriesCommandListener implements Listener {
     private final List<String> blacklist;
 
     public GameModeInventoriesCommandListener(GameModeInventories plugin) {
+
         this.plugin = plugin;
         this.blacklist = plugin.getConfig().getStringList("commands");
         for (int i = 0, l = this.blacklist.size(); i < l; ++i) {
+
             this.blacklist.set(i, this.blacklist.get(i).toLowerCase());
+
         }
+
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onCommandUse(PlayerCommandPreprocessEvent event) {
+
         if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)
                 || !plugin.getConfig().getBoolean("command_blacklist")
-                || GameModeInventoriesBypass.canBypass(event.getPlayer(), "commands", plugin)) {
+                || GameModeInventoriesBypass.canBypass(event.getPlayer(), "commands", plugin))
+        {
+
             return;
+
         }
+
         String message = event.getMessage();
         // get the command from the message
         String[] args = message.split(" ");
         if (args.length > 0) {
+
             String command = args[0].substring(1).toLowerCase();
             if (blacklist.contains(command)) {
+
                 event.setCancelled(true);
                 if (!plugin.getConfig().getBoolean("dont_spam_chat")) {
-                    event.getPlayer()
-                            .sendMessage(plugin.MY_PLUGIN_NAME
-                                    + String.format(
-                                            plugin.getM().getMessage().get("NO_CREATIVE_COMMAND"),
-                                            ChatColor.GREEN + "/" + command + ChatColor.RESET));
+
+                    event.getPlayer().sendMessage(
+                            plugin.MY_PLUGIN_NAME + String.format(plugin.getM().getMessage().get("NO_CREATIVE_COMMAND"),
+                                    ChatColor.GREEN + "/" + command + ChatColor.RESET));
+
                 }
+
             }
+
         }
+
     }
+
 }

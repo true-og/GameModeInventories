@@ -20,42 +20,61 @@ public class GameModeInventoriesDeath implements Listener {
     private final GameMode mode;
 
     public GameModeInventoriesDeath(GameModeInventories plugin) {
+
         this.plugin = plugin;
         ServerValues sv = getServerForceGamemode();
         force = sv.getForce();
         mode = sv.getMode();
+
     }
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
+
         assert (event.getEntity() instanceof Player);
         Player p = event.getEntity();
         if (p.hasPermission("gamemodeinventories.death") && plugin.getConfig().getBoolean("save_on_death")) {
+
             // save their inventory
             plugin.getInventoryHandler().saveOnDeath(p);
             event.getDrops().clear();
+
         }
+
         if (p.getGameMode().equals(GameMode.CREATIVE) && plugin.getConfig().getBoolean("no_drops")) {
+
             event.getDrops().clear();
+
         }
+
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+
         Player p = event.getPlayer();
         if (p.hasPermission("gamemodeinventories.use") && force) {
+
             p.setGameMode(mode);
+
         }
+
     }
 
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event) {
+
         Player p = event.getPlayer();
         if (p.hasPermission("gamemodeinventories.death") && plugin.getConfig().getBoolean("save_on_death")) {
+
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+
                 plugin.getInventoryHandler().restoreOnSpawn(p);
+
             });
+
         }
+
     }
 
     /**
@@ -64,9 +83,11 @@ public class GameModeInventoriesDeath implements Listener {
      * @return whether the value is true or false.
      */
     private ServerValues getServerForceGamemode() {
+
         FileInputStream in = null;
         ServerValues sv = new ServerValues();
         try {
+
             Properties properties = new Properties();
             String path = "server.properties";
             in = new FileInputStream(path);
@@ -74,20 +95,35 @@ public class GameModeInventoriesDeath implements Listener {
             sv.setForce(properties.getProperty("force-gamemode").equalsIgnoreCase("true"));
             GameMode gmode = GameMode.valueOf(properties.getProperty("gamemode").toUpperCase(Locale.ENGLISH));
             sv.setMode(gmode);
+
         } catch (FileNotFoundException ex) {
+
             plugin.debug("Could not find server.properties!");
+
         } catch (IOException ex) {
+
             plugin.debug("Could not read server.properties!");
+
         } finally {
+
             try {
+
                 if (in != null) {
+
                     in.close();
+
                 }
+
             } catch (IOException ex) {
+
                 plugin.debug("Could not close server.properties!");
+
             }
+
         }
+
         return sv;
+
     }
 
     public class ServerValues {
@@ -96,19 +132,29 @@ public class GameModeInventoriesDeath implements Listener {
         private GameMode mode;
 
         public boolean getForce() {
+
             return force;
+
         }
 
         public void setForce(boolean force) {
+
             this.force = force;
+
         }
 
         public GameMode getMode() {
+
             return mode;
+
         }
 
         public void setMode(GameMode mode) {
+
             this.mode = mode;
+
         }
+
     }
+
 }

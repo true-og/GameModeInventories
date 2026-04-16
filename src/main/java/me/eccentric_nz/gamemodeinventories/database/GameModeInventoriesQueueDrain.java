@@ -14,7 +14,9 @@ public class GameModeInventoriesQueueDrain {
      * @param plugin
      */
     public GameModeInventoriesQueueDrain(GameModeInventories plugin) {
+
         this.plugin = plugin;
+
     }
 
     /**
@@ -30,29 +32,31 @@ public class GameModeInventoriesQueueDrain {
         while (!GameModeInventoriesRecordingQueue.getQUEUE().isEmpty()) {
 
             plugin.debug("Starting drain batch...", GMIDebug.INFO);
-            plugin.debug(
-                    "Current queue size: "
-                            + GameModeInventoriesRecordingQueue.getQUEUE().size(),
-                    GMIDebug.INFO);
+            plugin.debug("Current queue size: " + GameModeInventoriesRecordingQueue.getQUEUE().size(), GMIDebug.INFO);
 
             // run insert
             try {
+
                 recorderTask.insertIntoDatabase();
+
             } catch (final Exception e) {
-                //                e.printStackTrace();
-                plugin.debug(
-                        "Stopping queue drain due to caught exception. Queue items lost: "
-                                + GameModeInventoriesRecordingQueue.getQUEUE().size(),
-                        GMIDebug.INFO);
+
+                // e.printStackTrace();
+                plugin.debug("Stopping queue drain due to caught exception. Queue items lost: "
+                        + GameModeInventoriesRecordingQueue.getQUEUE().size(), GMIDebug.INFO);
                 break;
+
             }
 
             if (GameModeInventoriesRecordingManager.failedDbConnectionCount > 0) {
-                plugin.debug(
-                        "Stopping queue drain due to detected database error. Queue items lost: "
-                                + GameModeInventoriesRecordingQueue.getQUEUE().size(),
-                        GMIDebug.INFO);
+
+                plugin.debug("Stopping queue drain due to detected database error. Queue items lost: "
+                        + GameModeInventoriesRecordingQueue.getQUEUE().size(), GMIDebug.INFO);
+
             }
+
         }
+
     }
+
 }

@@ -27,8 +27,9 @@ SOFTWARE.
 */
 
 /**
- * A JSONTokener takes a source string and extracts characters and tokens from it. It is used by the JSONObject and
- * JSONArray constructors to parse JSON source strings.
+ * A JSONTokener takes a source string and extracts characters and tokens from
+ * it. It is used by the JSONObject and JSONArray constructors to parse JSON
+ * source strings.
  *
  * @author JSON.org
  * @version 2012-02-16
@@ -49,6 +50,7 @@ public class JSONTokener {
      * @param reader A reader.
      */
     public JSONTokener(Reader reader) {
+
         this.reader = reader.markSupported() ? reader : new BufferedReader(reader);
         eof = false;
         usePrevious = false;
@@ -56,6 +58,7 @@ public class JSONTokener {
         index = 0;
         character = 1;
         line = 1;
+
     }
 
     /**
@@ -64,7 +67,9 @@ public class JSONTokener {
      * @param inputStream
      */
     public JSONTokener(InputStream inputStream) throws JSONException {
+
         this(new InputStreamReader(inputStream));
+
     }
 
     /**
@@ -73,58 +78,86 @@ public class JSONTokener {
      * @param s A source string.
      */
     public JSONTokener(String s) {
+
         this(new StringReader(s));
+
     }
 
     /**
      * Get the hex value of a character (base16).
      *
-     * @param c A character between '0' and '9' or between 'A' and 'F' or between 'a' and 'f'.
+     * @param c A character between '0' and '9' or between 'A' and 'F' or between
+     *          'a' and 'f'.
      * @return An int between 0 and 15, or -1 if c was not a hex digit.
      */
     public static int dehexchar(char c) {
+
         if (c >= '0' && c <= '9') {
+
             return c - '0';
+
         }
+
         if (c >= 'A' && c <= 'F') {
+
             return c - ('A' - 10);
+
         }
+
         if (c >= 'a' && c <= 'f') {
+
             return c - ('a' - 10);
+
         }
+
         return -1;
+
     }
 
     /**
-     * Back up one character. This provides a sort of lookahead capability, so that you can test for a digit or letter
-     * before attempting to parse the next number or identifier.
+     * Back up one character. This provides a sort of lookahead capability, so that
+     * you can test for a digit or letter before attempting to parse the next number
+     * or identifier.
      */
     public void back() throws JSONException {
+
         if (usePrevious || index <= 0) {
+
             throw new JSONException("Stepping back two steps is not supported");
+
         }
+
         index -= 1;
         character -= 1;
         usePrevious = true;
         eof = false;
+
     }
 
     public boolean end() {
+
         return eof && !usePrevious;
+
     }
 
     /**
-     * Determine if the source string still contains characters that next() can consume.
+     * Determine if the source string still contains characters that next() can
+     * consume.
      *
      * @return true if not yet at the end of the source.
      */
     public boolean more() throws JSONException {
+
         next();
         if (end()) {
+
             return false;
+
         }
+
         back();
         return true;
+
     }
 
     /**
@@ -133,34 +166,54 @@ public class JSONTokener {
      * @return The next character, or 0 if past the end of the source string.
      */
     public char next() throws JSONException {
+
         int c;
         if (usePrevious) {
+
             usePrevious = false;
             c = previous;
+
         } else {
+
             try {
+
                 c = reader.read();
+
             } catch (IOException exception) {
+
                 throw new JSONException(exception);
+
             }
 
             if (c <= 0) { // End of stream
+
                 eof = true;
                 c = 0;
+
             }
+
         }
+
         index += 1;
         if (previous == '\r') {
+
             line += 1;
             character = c == '\n' ? 0 : 1;
+
         } else if (c == '\n') {
+
             line += 1;
             character = 0;
+
         } else {
+
             character += 1;
+
         }
+
         previous = (char) c;
         return previous;
+
     }
 
     /**
@@ -171,11 +224,16 @@ public class JSONTokener {
      * @throws JSONException if the character does not match.
      */
     public char next(char c) throws JSONException {
+
         char n = next();
         if (n != c) {
+
             throw syntaxError("Expected '" + c + "' and instead saw '" + n + "'");
+
         }
+
         return n;
+
     }
 
     /**
@@ -183,24 +241,35 @@ public class JSONTokener {
      *
      * @param n The number of characters to take.
      * @return A string of n characters.
-     * @throws JSONException Substring bounds error if there are not n characters remaining in the source string.
+     * @throws JSONException Substring bounds error if there are not n characters
+     *                       remaining in the source string.
      */
     public String next(int n) throws JSONException {
+
         if (n == 0) {
+
             return "";
+
         }
 
         char[] chars = new char[n];
         int pos = 0;
 
         while (pos < n) {
+
             chars[pos] = next();
             if (end()) {
+
                 throw syntaxError("Substring bounds error");
+
             }
+
             pos += 1;
+
         }
+
         return new String(chars);
+
     }
 
     /**
@@ -210,30 +279,40 @@ public class JSONTokener {
      * @throws JSONException
      */
     public char nextClean() throws JSONException {
-        for (; ; ) {
+
+        for (;;) {
+
             char c = next();
             if (c == 0 || c > ' ') {
+
                 return c;
+
             }
+
         }
+
     }
 
     /**
-     * Return the characters up to the next close quote character. Backslash processing is done. The formal JSON format
-     * does not allow strings in single quotes, but an implementation is allowed to accept them.
+     * Return the characters up to the next close quote character. Backslash
+     * processing is done. The formal JSON format does not allow strings in single
+     * quotes, but an implementation is allowed to accept them.
      *
-     * @param quote The quoting character, either
-     *              <code>"</code>&nbsp;<small>(double quote)</small> or
-     *              <code>'</code>&nbsp;<small>(single quote)</small>.
+     * @param quote The quoting character, either <code>"</code>&nbsp;<small>(double
+     *              quote)</small> or <code>'</code>&nbsp;<small>(single
+     *              quote)</small>.
      * @return A String.
      * @throws JSONException Unterminated string.
      */
     public String nextString(char quote) throws JSONException {
+
         char c;
         StringBuilder sb = new StringBuilder();
-        for (; ; ) {
+        for (;;) {
+
             c = next();
             switch (c) {
+
                 case 0:
                 case '\n':
                 case '\r':
@@ -241,6 +320,7 @@ public class JSONTokener {
                 case '\\':
                     c = next();
                     switch (c) {
+
                         case 'b':
                             sb.append('\b');
                             break;
@@ -267,70 +347,99 @@ public class JSONTokener {
                             break;
                         default:
                             throw syntaxError("Illegal escape.");
+
                     }
                     break;
                 default:
                     if (c == quote) {
+
                         return sb.toString();
+
                     }
                     sb.append(c);
+
             }
+
         }
+
     }
 
     /**
-     * Get the text up but not including the specified character or the end of line, whichever comes first.
+     * Get the text up but not including the specified character or the end of line,
+     * whichever comes first.
      *
      * @param delimiter A delimiter character.
      * @return A string.
      */
     public String nextTo(char delimiter) throws JSONException {
+
         StringBuilder sb = new StringBuilder();
-        for (; ; ) {
+        for (;;) {
+
             char c = next();
             if (c == delimiter || c == 0 || c == '\n' || c == '\r') {
+
                 if (c != 0) {
+
                     back();
+
                 }
+
                 return sb.toString().trim();
+
             }
+
             sb.append(c);
+
         }
+
     }
 
     /**
-     * Get the text up but not including one of the specified delimiter characters or the end of line, whichever comes
-     * first.
+     * Get the text up but not including one of the specified delimiter characters
+     * or the end of line, whichever comes first.
      *
      * @param delimiters A set of delimiter characters.
      * @return A string, trimmed.
      */
     public String nextTo(String delimiters) throws JSONException {
+
         char c;
         StringBuilder sb = new StringBuilder();
-        for (; ; ) {
+        for (;;) {
+
             c = next();
             if (delimiters.indexOf(c) >= 0 || c == 0 || c == '\n' || c == '\r') {
+
                 if (c != 0) {
+
                     back();
+
                 }
+
                 return sb.toString().trim();
+
             }
+
             sb.append(c);
+
         }
+
     }
 
     /**
-     * Get the next value. The value can be a Boolean, Double, Integer, JSONArray, JSONObject, Long, or String, or the
-     * JSONObject.NULL object.
+     * Get the next value. The value can be a Boolean, Double, Integer, JSONArray,
+     * JSONObject, Long, or String, or the JSONObject.NULL object.
      *
      * @return An object.
      * @throws JSONException If syntax error.
      */
     public Object nextValue() throws JSONException {
+
         char c = nextClean();
         String string;
         switch (c) {
+
             case '"':
             case '\'':
                 return nextString(c);
@@ -340,50 +449,70 @@ public class JSONTokener {
             case '[':
                 back();
                 return new JSONArray(this);
+
         }
+
         StringBuilder sb = new StringBuilder();
         while (c >= ' ' && ",:]}/\\\"[{;=#".indexOf(c) < 0) {
+
             sb.append(c);
             c = next();
+
         }
+
         back();
         string = sb.toString().trim();
         if ("".equals(string)) {
+
             throw syntaxError("Missing value");
+
         }
+
         return JSONObject.stringToValue(string);
+
     }
 
     /**
-     * Skip characters until the next character is the requested character. If the requested character is not found, no
-     * characters are skipped.
+     * Skip characters until the next character is the requested character. If the
+     * requested character is not found, no characters are skipped.
      *
      * @param to A character to skip to.
-     * @return The requested character, or zero if the requested character is not found.
+     * @return The requested character, or zero if the requested character is not
+     *         found.
      */
     public char skipTo(char to) throws JSONException {
+
         char c;
         try {
+
             long startIndex = index;
             long startCharacter = character;
             long startLine = line;
             reader.mark(1000000);
             do {
+
                 c = next();
                 if (c == 0) {
+
                     reader.reset();
                     index = startIndex;
                     character = startCharacter;
                     line = startLine;
                     return c;
+
                 }
+
             } while (c != to);
+
         } catch (IOException exc) {
+
             throw new JSONException(exc);
+
         }
 
         back();
         return c;
+
     }
 
     /**
@@ -393,7 +522,9 @@ public class JSONTokener {
      * @return A JSONException object, suitable for throwing
      */
     public JSONException syntaxError(String message) {
+
         return new JSONException(message + toString());
+
     }
 
     /**
@@ -403,6 +534,9 @@ public class JSONTokener {
      */
     @Override
     public String toString() {
+
         return " at " + index + " [character " + character + " line " + line + "]";
+
     }
+
 }

@@ -17,7 +17,9 @@ public class JSONException extends RuntimeException {
      * @param message Detail about the reason for the exception.
      */
     public JSONException(String message) {
+
         super(message);
+
     }
 
     /**
@@ -26,17 +28,24 @@ public class JSONException extends RuntimeException {
      * @param cause
      */
     public JSONException(Throwable cause) {
+
         super(cause.getMessage());
         this.cause = cause;
+
     }
 
     /**
-     * Returns the cause of this exception or null if the cause is nonexistent or unknown.
+     * Returns the cause of this exception or null if the cause is nonexistent or
+     * unknown.
      *
-     * @return the cause of this exception or null if the cause is nonexistent or unknown.
+     * @return the cause of this exception or null if the cause is nonexistent or
+     *         unknown.
      */
     @Override
     public Throwable getCause() {
+
         return this.cause;
+
     }
+
 }

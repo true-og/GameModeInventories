@@ -1,14 +1,22 @@
-## GameModeInventories
-
-A CraftBukkit plugin for Minecraft Server.
+## GameModeInventories-OG
 
 Allow players to have separate inventories for each game mode (Creative, Survival and Adventure).
+
+This is a [TrueOG Network](https://trueog.net) maintained soft fork of [eccentricdevotion/GameModeInventories](https://github.com/eccentricdevotion/GameModeInventories).
+
+### Changes from Upstream
+
+- Build system migrated from Maven to Gradle (Kotlin DSL), Gradle 8.14.3, Shadow 8.3.9, Spotless with TrueOG Network's eclipse-based Java Formatting.
+- `config.yml` is read-only at runtime — the plugin no longer mutates or rewrites it. A default `config.yml` is copied into the plugin folder on first run if missing.
+- Compatible with [NoClip-OG](https://github.com/true-og/NoClip-OG) (1.3.0+). When `restrict_spectator` is enabled, players holding the `noclip.use` permission are exempt from the restriction so NoClip's creative/spectator toggle works without being cancelled or spamming chat.
+- Dropped LogBlock integration. Block-removal logging now runs exclusively through CoreProtect / CoreProtect-OG.
+- Targets Purpur API 1.19.4 (Java 17, GraalVM toolchain).
 
 This plugin (and the GMIDatabaseConverter plugin) are available for download as a single ZIP file from the [GameModeInventories page on BukkitDev](http://dev.bukkit.org/bukkit-plugins/gamemodeinventories).
 
 ### Warning
 
-This version of GameModeInventories uses a different storage format when saving inventories. Before installing this version, you should first run the [GMIDatabaseConverter](https://github.com/eccentricdevotion/GMIDatabaseConverter/blob/master/README.md) plugin on your CraftBukkit 1.6.4 server to update your GameModeInventories database.
+This version of GameModeInventories uses a different storage format when saving inventories from the legacy one. Before installing this version, you should first run the [GMIDatabaseConverter](https://github.com/eccentricdevotion/GMIDatabaseConverter/blob/master/README.md) plugin on your CraftBukkit 1.6.4 server to update your GameModeInventories database.
 
 ### How do I update my GMI database?
 

@@ -21,6 +21,7 @@ public class GameModeInventoriesPistonListener implements Listener {
     private final List<Material> wouldDrop = new ArrayList<>();
 
     public GameModeInventoriesPistonListener(GameModeInventories plugin) {
+
         this.plugin = plugin;
         wouldDrop.add(Material.ACACIA_DOOR);
         wouldDrop.add(Material.ACACIA_PRESSURE_PLATE);
@@ -103,96 +104,118 @@ public class GameModeInventoriesPistonListener implements Listener {
         wouldDrop.add(Material.WHITE_BED); // Still Breaks
         wouldDrop.add(Material.WHITE_TULIP);
         wouldDrop.add(Material.YELLOW_BED);
+
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
+
         if (!plugin.getConfig().getBoolean("track_creative_place.enabled")) {
+
             return;
+
         }
+
         if (plugin.getConfig().getBoolean("track_creative_place.no_piston_move")) {
+
             Block block = event.getBlock();
-            if (!plugin.getConfig()
-                    .getStringList("track_creative_place.worlds")
-                    .contains(block.getWorld().getName())) {
+            if (!plugin.getConfig().getStringList("track_creative_place.worlds").contains(block.getWorld().getName())) {
+
                 return;
+
             }
+
             for (Block b : event.getBlocks()) {
-                String gmiwc = block.getWorld().getName() + ","
-                        + block.getChunk().getX() + "," + block.getChunk().getZ();
+
+                String gmiwc = block.getWorld().getName() + "," + block.getChunk().getX() + ","
+                        + block.getChunk().getZ();
                 if (!plugin.getCreativeBlocks().containsKey(gmiwc)) {
+
                     return;
+
                 }
-                if (plugin.getCreativeBlocks()
-                        .get(gmiwc)
-                        .contains(b.getLocation().toString())) {
+
+                if (plugin.getCreativeBlocks().get(gmiwc).contains(b.getLocation().toString())) {
+
                     if (wouldDrop.contains(b.getType())) {
+
                         event.setCancelled(true);
                         plugin.debug("Cancelled piston extension because one of the moved blocks would drop an item");
                         return;
-                    } else if (plugin.getCreativeBlocks()
-                            .get(gmiwc)
-                            .contains(block.getLocation().toString())) {
+
+                    } else if (plugin.getCreativeBlocks().get(gmiwc).contains(block.getLocation().toString())) {
+
                         // update the location of the moved block
-                        plugin.getCreativeBlocks()
-                                .get(gmiwc)
-                                .remove(b.getLocation().toString());
-                        plugin.getCreativeBlocks()
-                                .get(gmiwc)
-                                .add(b.getRelative(event.getDirection())
-                                        .getLocation()
-                                        .toString());
+                        plugin.getCreativeBlocks().get(gmiwc).remove(b.getLocation().toString());
+                        plugin.getCreativeBlocks().get(gmiwc)
+                                .add(b.getRelative(event.getDirection()).getLocation().toString());
+
                     } else {
+
                         event.setCancelled(true);
                         plugin.debug(
                                 "Cancelled piston extension because one of the moved blocks was a CREATIVE placed block");
+
                     }
+
                 }
+
             }
+
         }
+
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
+
         if (!event.isSticky()) {
+
             return;
+
         }
+
         if (!plugin.getConfig().getBoolean("track_creative_place.enabled")) {
+
             return;
+
         }
+
         Block block = event.getBlock();
-        if (!plugin.getConfig()
-                .getStringList("track_creative_place.worlds")
-                .contains(block.getWorld().getName())) {
+        if (!plugin.getConfig().getStringList("track_creative_place.worlds").contains(block.getWorld().getName())) {
+
             return;
+
         }
-        String gmiwc = block.getWorld().getName() + "," + block.getChunk().getX() + ","
-                + block.getChunk().getZ();
+
+        String gmiwc = block.getWorld().getName() + "," + block.getChunk().getX() + "," + block.getChunk().getZ();
         if (!plugin.getCreativeBlocks().containsKey(gmiwc)) {
+
             return;
+
         }
-        if (plugin.getCreativeBlocks()
-                .get(gmiwc)
-                .contains(
-                        block.getRelative(event.getDirection(), 2).getLocation().toString())) {
-            if (plugin.getCreativeBlocks()
-                    .get(gmiwc)
-                    .contains(block.getLocation().toString())) {
+
+        if (plugin.getCreativeBlocks().get(gmiwc)
+                .contains(block.getRelative(event.getDirection(), 2).getLocation().toString()))
+        {
+
+            if (plugin.getCreativeBlocks().get(gmiwc).contains(block.getLocation().toString())) {
+
                 // update the location of the moved block
-                plugin.getCreativeBlocks()
-                        .get(gmiwc)
-                        .remove(block.getRelative(event.getDirection(), 2)
-                                .getLocation()
-                                .toString());
-                plugin.getCreativeBlocks()
-                        .get(gmiwc)
-                        .add(block.getRelative(event.getDirection())
-                                .getLocation()
-                                .toString());
+                plugin.getCreativeBlocks().get(gmiwc)
+                        .remove(block.getRelative(event.getDirection(), 2).getLocation().toString());
+                plugin.getCreativeBlocks().get(gmiwc)
+                        .add(block.getRelative(event.getDirection()).getLocation().toString());
+
             } else {
+
                 event.setCancelled(true);
                 plugin.debug("Cancelled piston retraction because the moved block was a CREATIVE placed block");
+
             }
+
         }
+
     }
+
 }

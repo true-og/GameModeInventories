@@ -28,6 +28,7 @@ public class GameModeInventoriesConfig {
     List<String> no = new ArrayList<>();
 
     public GameModeInventoriesConfig(GameModeInventories plugin) {
+
         this.plugin = plugin;
         configFile = new File(plugin.getDataFolder(), "config.yml");
         // string
@@ -136,77 +137,111 @@ public class GameModeInventoriesConfig {
         wor.add("world");
         no.add("STONE");
         no.add("DIRT");
+
     }
 
     public void checkConfig() {
+
         if (!configFile.exists()) {
-            plugin.getLogger()
-                    .log(
-                            Level.SEVERE,
-                            "config.yml was not found at "
-                                    + configFile.getAbsolutePath()
-                                    + ". This plugin only reads config.yml and will not generate or modify it.");
+
+            plugin.getLogger().log(Level.SEVERE, "config.yml was not found at " + configFile.getAbsolutePath()
+                    + ". This plugin only reads config.yml and will not generate or modify it.");
             return;
+
         }
+
         FileConfiguration config = plugin.getConfig();
         int missing = 0;
         // string values
         for (Map.Entry<String, String> entry : strOptions.entrySet()) {
+
             if (!config.contains(entry.getKey())) {
+
                 missing++;
                 plugin.getLogger().log(Level.WARNING, "Missing config option: " + entry.getKey());
+
             }
+
         }
+
         // int values
         for (Map.Entry<String, Integer> entry : intOptions.entrySet()) {
+
             if (!config.contains(entry.getKey())) {
+
                 missing++;
                 plugin.getLogger().log(Level.WARNING, "Missing config option: " + entry.getKey());
+
             }
+
         }
+
         // boolean values
         for (Map.Entry<String, Boolean> entry : boolOptions.entrySet()) {
+
             if (!config.contains(entry.getKey())) {
+
                 missing++;
                 plugin.getLogger().log(Level.WARNING, "Missing config option: " + entry.getKey());
+
             }
+
         }
+
         if (!config.contains("containers")) {
+
             missing++;
             plugin.getLogger().log(Level.WARNING, "Missing config option: containers");
+
         }
+
         if (!config.contains("blacklist")) {
+
             missing++;
             plugin.getLogger().log(Level.WARNING, "Missing config option: blacklist");
+
         } else if (config.getStringList("blacklist").contains("ZOMBIE_PIGMAN_SPAWN_EGG")) {
-            plugin.getLogger()
-                    .log(
-                            Level.WARNING,
-                            "config.yml still contains ZOMBIE_PIGMAN_SPAWN_EGG; update it manually to ZOMBIFIED_PIGLIN_SPAWN_EGG if needed.");
+
+            plugin.getLogger().log(Level.WARNING,
+                    "config.yml still contains ZOMBIE_PIGMAN_SPAWN_EGG; update it manually to ZOMBIFIED_PIGLIN_SPAWN_EGG if needed.");
+
         }
+
         if (!config.contains("commands")) {
+
             missing++;
             plugin.getLogger().log(Level.WARNING, "Missing config option: commands");
+
         }
+
         if (!config.contains("track_creative_place.worlds")) {
+
             missing++;
             plugin.getLogger().log(Level.WARNING, "Missing config option: track_creative_place.worlds");
+
         }
+
         if (!config.contains("track_creative_place.dont_track")) {
+
             missing++;
             plugin.getLogger().log(Level.WARNING, "Missing config option: track_creative_place.dont_track");
+
         }
+
         if (config.contains("storage.mysql.url")) {
-            plugin.getLogger()
-                    .log(
-                            Level.WARNING,
-                            "Legacy storage.mysql.url is still present in config.yml; update it manually because automatic migration is disabled.");
+
+            plugin.getLogger().log(Level.WARNING,
+                    "Legacy storage.mysql.url is still present in config.yml; update it manually because automatic migration is disabled.");
+
         }
+
         if (missing > 0) {
-            plugin.getLogger()
-                    .log(
-                            Level.WARNING,
-                            "config.yml is immutable; missing options were detected but not written automatically.");
+
+            plugin.getLogger().log(Level.WARNING,
+                    "config.yml is immutable; missing options were detected but not written automatically.");
+
         }
+
     }
+
 }

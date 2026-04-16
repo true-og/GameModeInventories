@@ -15,33 +15,50 @@ public class GameModeInventoriesBlocksConverter {
     private final GameModeInventories plugin;
 
     public GameModeInventoriesBlocksConverter(GameModeInventories plugin) {
+
         this.plugin = plugin;
+
     }
 
     public static void processUpdateCounts(int[] updateCounts) {
+
         for (int i = 0; i < updateCounts.length; i++) {
+
             if (updateCounts[i] >= 0) {
+
                 // Successfully executed; the number represents number of affected rows
             } else if (updateCounts[i] == Statement.SUCCESS_NO_INFO) {
+
                 // Successfully executed; number of affected rows not available
             } else if (updateCounts[i] == Statement.EXECUTE_FAILED) {
+
                 // Failed to execute
             }
+
         }
+
     }
 
     public void convertBlocksTable() {
+
         try {
+
             try (Connection connection = plugin.getDatabaseConnection();
-                    PreparedStatement statement =
-                            connection.prepareStatement("SELECT id, location FROM " + plugin.getPrefix() + "blocks");
-                    ResultSet rs = statement.executeQuery(); ) {
+                    PreparedStatement statement = connection
+                            .prepareStatement("SELECT id, location FROM " + plugin.getPrefix() + "blocks");
+                    ResultSet rs = statement.executeQuery();)
+            {
+
                 if (rs.isBeforeFirst()) {
+
                     try (PreparedStatement ps = connection.prepareStatement(
-                            "UPDATE " + plugin.getPrefix() + "blocks SET worldchunk = ? WHERE id = ?"); ) {
+                            "UPDATE " + plugin.getPrefix() + "blocks SET worldchunk = ? WHERE id = ?");)
+                    {
+
                         connection.setAutoCommit(false);
                         long count = 0;
                         while (rs.next()) {
+
                             String l = rs.getString("location");
                             // Location{world=CraftWorld{name=world},x=-87.0,y=61.0,z=237.0,pitch=0.0,yaw=0.0}
                             String[] first = l.split(",");
@@ -56,6 +73,7 @@ public class GameModeInventoriesBlocksConverter {
                             ps.addBatch();
                             count++;
                             if (count == 1000) {
+
                                 // Execute the batch
                                 int[] updateCounts = ps.executeBatch();
                                 // All statements were successfully executed.
@@ -65,20 +83,33 @@ public class GameModeInventoriesBlocksConverter {
                                 // Since there were no errors, commit
                                 connection.commit();
                                 count = 0;
+
                             }
+
                         }
+
                     }
+
                 }
+
             } catch (BatchUpdateException ex) {
+
                 // Not all of the statements were successfully executed
                 int[] updateCounts = ex.getUpdateCounts();
                 // Some databases will continue to execute after one fails.
                 // If so, updateCounts.length will equal the number of batched statements.
-                // If not, updateCounts.length will equal the number of successfully executed statements
+                // If not, updateCounts.length will equal the number of successfully executed
+                // statements
                 processUpdateCounts(updateCounts);
+
             }
+
         } catch (SQLException ex) {
+
             plugin.debug("Blocks updater error: " + ex.getMessage(), GMIDebug.ERROR);
+
         }
+
     }
+
 }

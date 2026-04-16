@@ -34,100 +34,162 @@ import org.bukkit.inventory.ItemStack;
 public class GameModeInventoriesJSONSerialization {
 
     public static Map<String, Object> toMap(JSONObject object) throws JSONException {
+
         Map<String, Object> map = new HashMap<>();
         Iterator<String> keys = object.keys();
         while (keys.hasNext()) {
+
             String key = keys.next();
             map.put(key, fromJson(object.get(key)));
+
         }
+
         return map;
+
     }
 
     private static Object fromJson(Object json) throws JSONException {
+
         if (json == JSONObject.NULL) {
+
             return null;
+
         } else if (json instanceof JSONObject) {
+
             return toMap((JSONObject) json);
+
         } else if (json instanceof JSONArray) {
+
             return toList((JSONArray) json);
+
         } else {
+
             return json;
+
         }
+
     }
 
     public static List<Object> toList(JSONArray array) throws JSONException {
+
         List<Object> list = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
+
             list.add(fromJson(array.get(i)));
+
         }
+
         return list;
+
     }
 
     public static String toString(ItemStack[] inv) {
+
         List<String> result = new ArrayList<>();
         List<ConfigurationSerializable> items = new ArrayList<>();
         items.addAll(Arrays.asList(inv));
         items.forEach((cs) -> {
+
             if (cs == null) {
+
                 result.add("null");
+
             } else {
+
                 result.add(new JSONObject(serialize(cs)).toString());
+
             }
+
         });
         JSONArray json_array = new JSONArray(result);
         return json_array.toString();
+
     }
 
     public static ItemStack[] toItemStacks(String s) {
+
         JSONArray json = new JSONArray(s);
         List<ItemStack> contents = new ArrayList<>();
         for (int i = 0; i < json.length(); i++) {
+
             String piece = json.getString(i);
             if (piece.equalsIgnoreCase("null")) {
+
                 contents.add(null);
+
             } else {
+
                 try {
+
                     ItemStack item = (ItemStack) deserialize(toMap(new JSONObject(piece)));
                     contents.add(item);
+
                 } catch (JSONException e) {
+
                     Bukkit.getLogger().log(Level.WARNING, "There was a JSON error: " + e.getMessage());
+
                 }
+
             }
+
         }
+
         ItemStack[] items = new ItemStack[contents.size()];
         for (int x = 0; x < contents.size(); x++) {
+
             items[x] = contents.get(x);
+
         }
+
         return items;
+
     }
 
     public static Map<String, Object> serialize(ConfigurationSerializable cs) {
+
         Map<String, Object> serialized = recreateMap(cs.serialize());
         serialized.entrySet().forEach((entry) -> {
+
             if (entry.getValue() instanceof ConfigurationSerializable configurationSerializable) {
+
                 entry.setValue(serialize(configurationSerializable));
+
             }
+
         });
-        serialized.put(
-                ConfigurationSerialization.SERIALIZED_TYPE_KEY, ConfigurationSerialization.getAlias(cs.getClass()));
+        serialized.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY,
+                ConfigurationSerialization.getAlias(cs.getClass()));
         return serialized;
+
     }
 
     public static Map<String, Object> recreateMap(Map<String, Object> original) {
+
         Map<String, Object> map = new HashMap<>();
         original.entrySet().forEach((entry) -> {
+
             map.put(entry.getKey(), entry.getValue());
+
         });
         return map;
+
     }
 
     public static ConfigurationSerializable deserialize(Map<String, Object> map) {
+
         map.entrySet().forEach((entry) -> {
+
             if (entry.getValue() instanceof Map map1
-                    && map1.containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
+                    && map1.containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY))
+            {
+
                 entry.setValue(deserialize((Map) entry.getValue()));
+
             }
+
         });
         return ConfigurationSerialization.deserializeObject(map);
+
     }
+
 }

@@ -10,6 +10,7 @@ public class GameModeInventoriesSQLiteConnectionPool {
     private final HikariDataSource hikari;
 
     public GameModeInventoriesSQLiteConnectionPool(GameModeInventories plugin) throws ClassNotFoundException {
+
         Class.forName("org.sqlite.JDBC");
         HikariConfig config = new HikariConfig();
         config.setPoolName("GMISQLitePool");
@@ -26,9 +27,13 @@ public class GameModeInventoriesSQLiteConnectionPool {
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "1024");
         hikari = new HikariDataSource(config);
+
     }
 
     public HikariDataSource getHikari() {
+
         return hikari;
+
     }
+
 }

@@ -23,6 +23,7 @@ public class GameModeInventoriesPhysicsListener implements Listener {
     private final List<Material> plates = new ArrayList<>();
 
     public GameModeInventoriesPhysicsListener(GameModeInventories plugin) {
+
         this.plugin = plugin;
         willDrop.add(Material.ACACIA_BUTTON);
         willDrop.add(Material.ACACIA_DOOR);
@@ -173,41 +174,63 @@ public class GameModeInventoriesPhysicsListener implements Listener {
         plates.add(Material.OAK_PRESSURE_PLATE);
         plates.add(Material.SPRUCE_PRESSURE_PLATE);
         plates.add(Material.STONE_PRESSURE_PLATE);
+
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onBlockPhysics(BlockPhysicsEvent event) {
+
         Block block = event.getBlock();
         if (block == null) {
+
             return;
+
         }
+
         if (!willDrop.contains(block.getType())) {
+
             return;
+
         }
+
         if (!plugin.getConfig().getBoolean("track_creative_place.enabled")
-                || !plugin.getConfig().getBoolean("track_creative_place.attached_block")) {
+                || !plugin.getConfig().getBoolean("track_creative_place.attached_block"))
+        {
+
             return;
+
         }
-        if (!plugin.getConfig()
-                .getStringList("track_creative_place.worlds")
-                .contains(block.getWorld().getName())) {
+
+        if (!plugin.getConfig().getStringList("track_creative_place.worlds").contains(block.getWorld().getName())) {
+
             return;
+
         }
+
         if (doors.contains(block.getType()) && plates.contains(event.getChangedType())) {
+
             return;
+
         }
+
         if (willDrop.contains(block.getType())) {
-            String gmiwc = block.getWorld().getName() + "," + block.getChunk().getX() + ","
-                    + block.getChunk().getZ();
+
+            String gmiwc = block.getWorld().getName() + "," + block.getChunk().getX() + "," + block.getChunk().getZ();
             if (!plugin.getCreativeBlocks().containsKey(gmiwc)) {
+
                 return;
+
             }
+
             // check if the block was placed in creative
-            if (plugin.getCreativeBlocks()
-                    .get(gmiwc)
-                    .contains(event.getBlock().getLocation().toString())) {
+            if (plugin.getCreativeBlocks().get(gmiwc).contains(event.getBlock().getLocation().toString())) {
+
                 event.setCancelled(true);
+
             }
+
         }
+
     }
+
 }

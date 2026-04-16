@@ -5,4 +5,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "GameModeInventories"
+rootProject.name = "GameModeInventories-OG"

@@ -7,14 +7,17 @@ import org.bukkit.entity.Player;
 
 /**
  * @author desht
- * <p>
- * Adapted from ExperienceUtils code originally in ScrollingMenuSign.
- * <p>
- * Credit to nisovin (http://forums.bukkit.org/threads/experienceutils-make-giving-taking-exp-a-bit-more-intuitive.54450/#post-1067480)
- * for an implementation that avoids the problems of getTotalExperience(), which doesn't work properly after a player
- * has enchanted something.
- * <p>
- * Credit to comphenix for further contributions: See http://forums.bukkit.org/threads/experiencemanager-was-experienceutils-make-giving-taking-exp-a-bit-more-intuitive.54450/page-3#post-1273622
+ *         <p>
+ *         Adapted from ExperienceUtils code originally in ScrollingMenuSign.
+ *         <p>
+ *         Credit to nisovin
+ *         (http://forums.bukkit.org/threads/experienceutils-make-giving-taking-exp-a-bit-more-intuitive.54450/#post-1067480)
+ *         for an implementation that avoids the problems of
+ *         getTotalExperience(), which doesn't work properly after a player has
+ *         enchanted something.
+ *         <p>
+ *         Credit to comphenix for further contributions: See
+ *         http://forums.bukkit.org/threads/experiencemanager-was-experienceutils-make-giving-taking-exp-a-bit-more-intuitive.54450/page-3#post-1273622
  */
 public class GameModeInventoriesXPCalculator {
 
@@ -24,9 +27,11 @@ public class GameModeInventoriesXPCalculator {
     private static int xpTotalToReachLevel[];
 
     static {
+
         // 25 is an arbitrary value for the initial table size - the actual
         // value isn't critically important since the table is resized as needed.
         initLookupTables(25);
+
     }
 
     private final WeakReference<Player> player;
@@ -39,9 +44,11 @@ public class GameModeInventoriesXPCalculator {
      * @throws IllegalArgumentException if the player is null
      */
     GameModeInventoriesXPCalculator(Player player) {
+
         Preconditions.checkNotNull(player, "Player cannot be null");
         this.player = new WeakReference<>(player);
         playerName = player.getName();
+
     }
 
     /**
@@ -50,7 +57,9 @@ public class GameModeInventoriesXPCalculator {
      * @return the current hard max level
      */
     public static int getHardMaxLevel() {
+
         return hardMaxLevel;
+
     }
 
     /**
@@ -59,7 +68,9 @@ public class GameModeInventoriesXPCalculator {
      * @param hardMaxLevel the new hard max level
      */
     public static void setHardMaxLevel(int hardMaxLevel) {
+
         GameModeInventoriesXPCalculator.hardMaxLevel = hardMaxLevel;
+
     }
 
     /**
@@ -68,33 +79,42 @@ public class GameModeInventoriesXPCalculator {
      * @param maxLevel The highest level handled by the lookup tables
      */
     private static void initLookupTables(int maxLevel) {
+
         xpTotalToReachLevel = new int[maxLevel];
 
         for (int i = 0; i < xpTotalToReachLevel.length; i++) {
-            xpTotalToReachLevel[i] = i >= 30
-                    ? (int) (3.5 * i * i - 151.5 * i + 2220)
+
+            xpTotalToReachLevel[i] = i >= 30 ? (int) (3.5 * i * i - 151.5 * i + 2220)
                     : i >= 16 ? (int) (1.5 * i * i - 29.5 * i + 360) : 17 * i;
+
         }
+
     }
 
     /**
-     * Calculate the level that the given XP quantity corresponds to, without using the lookup tables. This is needed if
-     * getLevelForExp() is called with an XP quantity beyond the range of the existing lookup tables.
+     * Calculate the level that the given XP quantity corresponds to, without using
+     * the lookup tables. This is needed if getLevelForExp() is called with an XP
+     * quantity beyond the range of the existing lookup tables.
      *
      * @param exp
      * @return
      */
     private static int calculateLevelForExp(int exp) {
+
         int level = 0;
         int curExp = 7; // level 1
         int incr = 10;
 
         while (curExp <= exp) {
+
             curExp += incr;
             level++;
             incr += (level % 2 == 0) ? 3 : 4;
+
         }
+
         return level;
+
     }
 
     /**
@@ -104,31 +124,42 @@ public class GameModeInventoriesXPCalculator {
      * @throws IllegalStateException if the player is no longer online
      */
     public Player getPlayer() {
+
         Player p = player.get();
         if (p == null) {
+
             throw new IllegalStateException("Player " + playerName + " is not online");
+
         }
+
         return p;
+
     }
 
     /**
-     * Adjust the player's XP by the given amount in an intelligent fashion. Works around some of the non-intuitive
-     * behaviour of the basic Bukkit player.giveExp() method.
+     * Adjust the player's XP by the given amount in an intelligent fashion. Works
+     * around some of the non-intuitive behaviour of the basic Bukkit
+     * player.giveExp() method.
      *
      * @param amt Amount of XP, may be negative
      */
     public void changeExp(int amt) {
+
         changeExp((double) amt);
+
     }
 
     /**
-     * Adjust the player's XP by the given amount in an intelligent fashion. Works around some of the non-intuitive
-     * behaviour of the basic Bukkit player.giveExp() method.
+     * Adjust the player's XP by the given amount in an intelligent fashion. Works
+     * around some of the non-intuitive behaviour of the basic Bukkit
+     * player.giveExp() method.
      *
      * @param amt Amount of XP, may be negative
      */
     private void changeExp(double amt) {
+
         setExp(getCurrentFractionalXP(), amt);
+
     }
 
     /**
@@ -137,7 +168,9 @@ public class GameModeInventoriesXPCalculator {
      * @param amt Amount of XP, should not be negative
      */
     void setExp(int amt) {
+
         setExp(0, amt);
+
     }
 
     /**
@@ -146,10 +179,13 @@ public class GameModeInventoriesXPCalculator {
      * @param amt Amount of XP, should not be negative
      */
     public void setExp(double amt) {
+
         setExp(0, amt);
+
     }
 
     private void setExp(double base, double amt) {
+
         int xp = (int) Math.max(base + amt, 0);
 
         Player p = getPlayer();
@@ -158,15 +194,22 @@ public class GameModeInventoriesXPCalculator {
 
         // Increment level
         if (curLvl != newLvl) {
+
             p.setLevel(newLvl);
+
         }
-        // Increment total experience - this should force the server to send an update packet
+
+        // Increment total experience - this should force the server to send an update
+        // packet
         if (xp > base) {
+
             p.setTotalExperience(p.getTotalExperience() + xp - (int) base);
+
         }
 
         double pct = (base - getXpForLevel(newLvl) + amt) / (double) (getXpNeededToLevelUp(newLvl));
         p.setExp((float) pct);
+
     }
 
     /**
@@ -175,11 +218,13 @@ public class GameModeInventoriesXPCalculator {
      * @return the player's total XP
      */
     int getCurrentExp() {
+
         Player p = getPlayer();
 
         int lvl = p.getLevel();
         int cur = getXpForLevel(lvl) + Math.round(getXpNeededToLevelUp(lvl) * p.getExp());
         return cur;
+
     }
 
     /**
@@ -188,11 +233,13 @@ public class GameModeInventoriesXPCalculator {
      * @return The player's total XP with fractions.
      */
     private double getCurrentFractionalXP() {
+
         Player p = getPlayer();
 
         int lvl = p.getLevel();
         double cur = getXpForLevel(lvl) + (double) (getXpNeededToLevelUp(lvl) * p.getExp());
         return cur;
+
     }
 
     /**
@@ -202,7 +249,9 @@ public class GameModeInventoriesXPCalculator {
      * @return true if the player has enough XP, false otherwise
      */
     public boolean hasExp(int amt) {
+
         return getCurrentExp() >= amt;
+
     }
 
     /**
@@ -212,7 +261,9 @@ public class GameModeInventoriesXPCalculator {
      * @return true if the player has enough XP, false otherwise
      */
     public boolean hasExp(double amt) {
+
         return getCurrentFractionalXP() >= amt;
+
     }
 
     /**
@@ -223,30 +274,41 @@ public class GameModeInventoriesXPCalculator {
      * @throws IllegalArgumentException if the given XP is less than 0
      */
     private int getLevelForExp(int exp) {
+
         if (exp <= 0) {
+
             return 0;
+
         }
+
         if (exp > xpTotalToReachLevel[xpTotalToReachLevel.length - 1]) {
+
             // need to extend the lookup tables
             int newMax = calculateLevelForExp(exp) * 2;
-            Preconditions.checkArgument(
-                    newMax <= hardMaxLevel, "Level for exp " + exp + " > hard max level " + hardMaxLevel);
+            Preconditions.checkArgument(newMax <= hardMaxLevel,
+                    "Level for exp " + exp + " > hard max level " + hardMaxLevel);
             initLookupTables(newMax);
+
         }
+
         int pos = Arrays.binarySearch(xpTotalToReachLevel, exp);
         return pos < 0 ? -pos - 2 : pos;
+
     }
 
     /**
-     * Retrieves the amount of experience the experience bar can hold at the given level.
+     * Retrieves the amount of experience the experience bar can hold at the given
+     * level.
      *
      * @param level the level to check
      * @return the amount of experience at this level in the level bar
      * @throws IllegalArgumentException if the level is less than 0
      */
     private int getXpNeededToLevelUp(int level) {
+
         Preconditions.checkArgument(level >= 0, "Level may not be negative.");
         return level > 30 ? 62 + (level - 30) * 7 : level >= 16 ? 17 + (level - 15) * 3 : 17;
+
     }
 
     /**
@@ -254,15 +316,21 @@ public class GameModeInventoriesXPCalculator {
      *
      * @param level The level to check for.
      * @return The amount of XP needed for the level.
-     * @throws IllegalArgumentException if the level is less than 0 or greater than the current hard maximum
+     * @throws IllegalArgumentException if the level is less than 0 or greater than
+     *                                  the current hard maximum
      */
     private int getXpForLevel(int level) {
-        Preconditions.checkArgument(
-                level >= 0 && level <= hardMaxLevel,
+
+        Preconditions.checkArgument(level >= 0 && level <= hardMaxLevel,
                 "Invalid level " + level + "(must be in range 0.." + hardMaxLevel + ")");
         if (level >= xpTotalToReachLevel.length) {
+
             initLookupTables(level * 2);
+
         }
+
         return xpTotalToReachLevel[level];
+
     }
+
 }
